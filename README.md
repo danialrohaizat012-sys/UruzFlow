@@ -30,3 +30,10 @@ Note: real Uruz formulas are still pending. Replace prototype formulas once the 
 - Browser favicon: scalable `favicon.svg`.
 - PNG favicon fallbacks: 32px and 16px.
 - Flat root structure retained.
+
+## v7 clean home-screen icon
+- Rebuilt app icon from scratch.
+- Emblem only inside the icon. No `URUZ`, `JRUZ`, or `Uruz Flow` text is embedded.
+- Dedicated `apple-touch-icon.png` (180×180) for iPhone.
+- iOS displays the app name `URUZ Flow` below the icon itself.
+- Service worker cache bumped and old caches are deleted on activation.
