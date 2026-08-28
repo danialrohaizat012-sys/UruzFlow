@@ -5,279 +5,240 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#071827"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Uruz Flow"/>
 <link rel="manifest" href="manifest.json"/>
 <link rel="apple-touch-icon" href="icon-192.png"/>
-<title>Uruz Flow</title>
+<title>URUZ Flow</title>
 <style>
 :root{
-  --bg:#071827;--bg2:#091d2d;--side:#061522;--panel:#0d2334;--panel2:#102d43;--line:#284154;
-  --text:#f6f8fb;--muted:#9fb1be;--blue:#4b91e2;--green:#48ba70;--amber:#f0a62d;--red:#eb5959;
-  --purple:#8c6bdd;--teal:#43b9b5;--shadow:0 18px 50px rgba(0,0,0,.18)
+ --bg:#071827;--side:#061522;--panel:#0d2334;--panel2:#102d43;--line:#284154;
+ --text:#f6f8fb;--muted:#9fb1be;--blue:#4b91e2;--green:#48ba70;--amber:#f0a62d;
+ --red:#eb5959;--purple:#8c6bdd;--teal:#43b9b5;--shadow:0 18px 50px rgba(0,0,0,.18)
 }
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{margin:0;background:linear-gradient(180deg,#071827,#071827 55%,#081b29);color:var(--text);font:14px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select{font:inherit}
+body{margin:0;background:linear-gradient(180deg,#071827,#081b29);color:var(--text);font:14px Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select,textarea{font:inherit}
 button{cursor:pointer}
-a{color:inherit}
-#splash{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 42%,#0c2639 0%,#071827 42%,#05131f 100%);display:grid;place-items:center;transition:opacity .55s ease,visibility .55s ease}
+#splash{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 42%,#0c2639 0%,#071827 42%,#05131f 100%);display:grid;place-items:center;transition:.55s opacity,.55s visibility}
 #splash.hide{opacity:0;visibility:hidden}
 .splashInner{text-align:center}
-.splashInner img{width:190px;max-width:52vw;border-radius:18px;animation:logoIn 1.45s cubic-bezier(.2,.9,.2,1);mix-blend-mode:screen;filter:brightness(1.08) contrast(1.02);opacity:.96;box-shadow:none}
-.splashInner .name{margin-top:12px;font:700 30px Georgia,serif;letter-spacing:.16em}
+.splashInner img{width:190px;max-width:52vw;border-radius:18px;mix-blend-mode:screen;filter:brightness(1.08) contrast(1.02);animation:logoIn 1.45s cubic-bezier(.2,.9,.2,1)}
 .splashInner .sub{margin-top:8px;color:#d7e0e6;letter-spacing:.24em;font-size:12px;font-weight:650}
 .loader{width:210px;height:3px;margin:24px auto 0;background:#173247;border-radius:999px;overflow:hidden}
 .loader:after{content:"";display:block;height:100%;width:45%;background:#fff;border-radius:999px;animation:load 2.55s ease-in-out forwards}
-@keyframes logoIn{0%{opacity:0;transform:scale(.75) rotate(-16deg)}55%{opacity:1;transform:scale(1.04) rotate(2deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes logoIn{0%{opacity:0;transform:scale(.75) rotate(-16deg)}55%{opacity:1;transform:scale(1.04) rotate(2deg)}100%{transform:scale(1)}}
 @keyframes load{0%{transform:translateX(-110%)}100%{transform:translateX(225%)}}
 .shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
-.sidebar{position:sticky;top:0;height:100vh;background:rgba(6,21,34,.96);border-right:1px solid var(--line);padding:22px 15px;display:flex;flex-direction:column;gap:17px;backdrop-filter:blur(12px)}
-.brand{display:flex;justify-content:center;padding:0 0 18px;border-bottom:1px solid #173044}
-.brand img{display:block;width:180px;max-width:100%;border-radius:13px}
-.profile{border:1px solid var(--line);background:#0b2030;border-radius:12px;padding:11px 12px}
-.profile small{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.profile b{font-size:13px}
-.nav{display:grid;gap:4px}
-.nav button{border:0;background:transparent;color:#dce6ed;text-align:left;padding:12px 13px;border-radius:9px}
+.sidebar{position:sticky;top:0;height:100vh;background:rgba(6,21,34,.96);border-right:1px solid var(--line);padding:22px 15px;display:flex;flex-direction:column;gap:17px}
+.brand{display:flex;justify-content:center;padding-bottom:18px;border-bottom:1px solid #173044}.brand img{width:180px;border-radius:13px}
+.profile{border:1px solid var(--line);background:#0b2030;border-radius:12px;padding:11px 12px}.profile small{display:block;color:var(--muted);font-size:11px}.profile b{font-size:13px}
+.nav{display:grid;gap:4px}.nav button{border:0;background:transparent;color:#dce6ed;text-align:left;padding:12px 13px;border-radius:9px}
 .nav button.active,.nav button:hover{background:#12375b}.nav span:first-child{display:inline-grid;width:28px}
-.sidebarFooter{margin-top:auto;color:var(--muted);font-size:11px;padding:10px 8px;border-top:1px solid var(--line)}
-main{min-width:0;padding:25px 28px 38px}
-.header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:19px}
-.header h1{font-size:31px;line-height:1.05;margin:0}.header p{margin:6px 0 0;color:var(--muted)}
-.controls{display:flex;gap:9px;flex-wrap:wrap;align-items:end}
-.control{display:grid;gap:5px}.control label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.input,.btn{border:1px solid var(--line);background:#0b2030;color:#fff;border-radius:9px;padding:10px 12px;min-height:42px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn.primary{background:#246bac;border-color:#2c7bc0}.btn.ghost:hover{background:#123048}
+main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:block}
+.header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}.header h1{font-size:31px;line-height:1.05;margin:0}.header p{margin:6px 0 0;color:var(--muted)}
+.controls,.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:end}.control{display:grid;gap:5px}.control label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.input,.btn{border:1px solid var(--line);background:#0b2030;color:#fff;border-radius:9px;padding:10px 12px;min-height:42px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn.primary{background:#246bac;border-color:#2c7bc0}.btn.success{background:#1f7d48;border-color:#1f7d48}.btn.warn{background:#745716;border-color:#745716}.btn.danger{background:#7d262c;border-color:#7d262c}
 .searchWrap{display:flex;gap:8px;margin-bottom:16px}.searchWrap .input{flex:1;min-width:0}
 .stageStrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:17px}
 .stageCard{position:relative;text-align:left;border:1px solid var(--line);background:linear-gradient(180deg,#0f293d,#0c2232);color:#fff;border-radius:14px;padding:16px;overflow:hidden;min-height:150px}
 .stageCard:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent,#4b91e2)}
-.stageCard:hover,.stageCard.active{border-color:#52718a;transform:translateY(-1px)}
 .stageCard .num{font-size:10px;color:var(--muted);letter-spacing:.12em}.stageCard h3{font-size:16px;margin:8px 0 3px}.stageCard .caption{font-size:11px;color:var(--muted);min-height:29px}
-.stageStats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.stageStats b{font-size:17px}.stageStats small{display:block;color:var(--muted);font-size:10px;margin-top:1px}
-.green{color:#69db8a}.amber{color:#ffc04b}.red{color:#ff7070}.blue{color:#68a8f4}.purple{color:#b29af0}.teal{color:#66d9d5}
-.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,.8fr);gap:15px}
+.stageStats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.stageStats b{font-size:17px}.stageStats small{display:block;color:var(--muted);font-size:10px}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,.8fr);gap:15px}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}
 .card{min-width:0;background:linear-gradient(180deg,#0d2537,#0b2131);border:1px solid var(--line);border-radius:13px;padding:16px;box-shadow:var(--shadow)}
 .card h2{font-size:16px;margin:0}.cardHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}.muted{color:var(--muted)}
-.scroll{overflow:auto}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #1c394d;white-space:nowrap}th{font-size:10px;color:#9eb0bc;text-transform:uppercase;letter-spacing:.04em}
-.companyBtn{border:0;background:transparent;color:#fff;padding:0;font-weight:650}.companyBtn:hover{text-decoration:underline}
+.scroll{overflow:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #1c394d;white-space:nowrap}th{font-size:10px;color:#9eb0bc;text-transform:uppercase;letter-spacing:.04em}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;font-size:11px}.badge:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.badge.on{color:#68d989;background:#12392c}.badge.pending{color:#ffbd43;background:#3b2d16}.badge.due{color:#ff7070;background:#3a1e25}.badge.done{color:#7bb7ff;background:#142d49}.badge.paid{color:#68d989;background:#12392c}.badge.unpaid{color:#ffbd43;background:#3b2d16}.badge.partial{color:#bca4ff;background:#2d2447}
-.sideList{display:grid;gap:8px}.sideItem{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #1c394d}.sideItem b{display:block;font-size:13px}.sideItem small{color:var(--muted)}
+.on,.paid{color:#68d989;background:#12392c}.pending,.unpaid{color:#ffbd43;background:#3b2d16}.due{color:#ff7070;background:#3a1e25}.done{color:#7bb7ff;background:#142d49}.partial{color:#bca4ff;background:#2d2447}
+.companyBtn{border:0;background:transparent;color:#fff;padding:0;font-weight:650}.companyBtn:hover{text-decoration:underline}
 .kpiGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.miniKpi{padding:12px;border-radius:10px;background:#0a1e2d;border:1px solid #203f54}.miniKpi b{display:block;font-size:20px}.miniKpi span{font-size:10px;color:var(--muted)}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;color:#b7c6d0;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#081a28;color:#fff;border-radius:9px;padding:10px}.field textarea{min-height:80px}.span2{grid-column:span 2}
+.sheet{border:1px solid #315066;border-radius:12px;overflow:hidden}.sheetRow{display:grid;grid-template-columns:1.4fr .8fr .8fr .8fr}.sheetRow>div,.sheetRow>input{padding:10px;border-right:1px solid #274359;border-bottom:1px solid #274359;background:#091d2c;color:#fff}.sheetRow.head>div{background:#102d43;font-size:11px;color:#b6c6d0;text-transform:uppercase;font-weight:700}.sheetRow input{width:100%;border-left:0;border-top:0}.sheetRow>*:last-child{border-right:0}
 .timeline{border-left:2px solid #31546b;margin-left:8px;padding-left:18px}.event{position:relative;margin:0 0 16px}.event:before{content:"";position:absolute;left:-24px;top:4px;width:10px;height:10px;border-radius:50%;background:#5a9bd4}.event b{display:block}.event small{color:var(--muted)}
-.modal{position:fixed;inset:0;z-index:100;background:rgba(2,10,18,.72);display:none;place-items:center;padding:18px}.modal.show{display:grid}.modalCard{width:min(760px,100%);max-height:90vh;overflow:auto;background:#0b2030;border:1px solid #355066;border-radius:16px;padding:18px;box-shadow:0 28px 70px rgba(0,0,0,.45)}
-.modalHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}.modalHead h2{margin:0}.close{border:1px solid var(--line);background:#10283a;color:#fff;border-radius:9px;width:40px;height:40px}
-.detailGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.detailBox{padding:11px;background:#081a28;border:1px solid #203d50;border-radius:10px}.detailBox small{display:block;color:var(--muted);margin-bottom:4px}
+.notice{padding:12px;border-radius:10px;background:#2b2412;border:1px solid #6e591c;color:#ffd878}
 .mobileNav{display:none}
-@media(max-width:1200px){.stageStrip{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:960px){
-  .shell{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:14px 9px}.brand img{width:62px;height:62px;object-fit:cover;object-position:50% 25%}.profile,.sidebarFooter,.nav .label{display:none}.nav button{text-align:center;font-size:19px}.nav span:first-child{width:auto}.layout{grid-template-columns:1fr}.header{flex-direction:column}.controls{width:100%}.control{flex:1}.stageStrip{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:640px){
-  body{padding-bottom:70px}.shell{display:block}.sidebar{display:none}main{padding:16px 13px 25px}.header h1{font-size:27px}.header{margin-bottom:14px}.controls{display:grid;grid-template-columns:1fr 1fr}.control:first-child{grid-column:1/-1}.stageStrip{display:flex;overflow:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-right:-13px}.stageCard{min-width:82vw;scroll-snap-align:start}.layout{gap:12px}.kpiGrid{grid-template-columns:1fr 1fr}.card{padding:14px}.searchWrap{position:sticky;top:0;z-index:20;background:linear-gradient(#071827 80%,transparent);padding:6px 0 10px}.mobileNav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(6,21,34,.96);border-top:1px solid var(--line);padding:7px max(7px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left));backdrop-filter:blur(14px)}.mobileNav button{border:0;background:transparent;color:#adc0cd;padding:6px 3px;font-size:10px}.mobileNav button b{display:block;font-size:18px;color:#fff;margin-bottom:2px}.detailGrid{grid-template-columns:1fr}.modal{align-items:end;padding:0}.modalCard{border-radius:18px 18px 0 0;max-height:88vh}
-}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.splashInner img,.loader:after{animation:none}}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(2,10,18,.72);display:none;place-items:center;padding:18px}.modal.show{display:grid}.modalCard{width:min(760px,100%);max-height:90vh;overflow:auto;background:#0b2030;border:1px solid #355066;border-radius:16px;padding:18px}.close{border:1px solid var(--line);background:#10283a;color:#fff;border-radius:9px;width:40px;height:40px}
+@media(max-width:1100px){.stageStrip{grid-template-columns:repeat(3,1fr)}.layout,.two{grid-template-columns:1fr}}
+@media(max-width:960px){.shell{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:14px 9px}.brand img{width:62px;height:62px;object-fit:cover;object-position:50% 25%}.profile,.nav .label{display:none}.nav button{text-align:center;font-size:19px}.nav span:first-child{width:auto}.header{flex-direction:column}.stageStrip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){body{padding-bottom:70px}.shell{display:block}.sidebar{display:none}main{padding:16px 13px 25px}.header h1{font-size:27px}.controls{display:grid;grid-template-columns:1fr 1fr;width:100%}.stageStrip{display:flex;overflow:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-right:-13px}.stageCard{min-width:82vw;scroll-snap-align:start}.kpiGrid{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.span2{grid-column:auto}.mobileNav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(6,21,34,.96);border-top:1px solid var(--line);padding:7px}.mobileNav button{border:0;background:transparent;color:#adc0cd;padding:6px 2px;font-size:9px}.mobileNav button b{display:block;font-size:17px;color:#fff}.sheetRow{grid-template-columns:1.2fr .7fr .7fr .7fr;min-width:650px}.modal{align-items:end;padding:0}.modalCard{border-radius:18px 18px 0 0;max-height:88vh}}
 </style>
 </head>
 <body>
-<div id="splash">
-  <div class="splashInner">
-    <img src="uruz-logo.png" alt="Uruz Consultancy"/>
-    <div class="name">URUZ FLOW</div>
-    <div class="sub">BEYOND NUMBERS</div>
-    <div class="loader"></div>
-  </div>
-</div>
+<div id="splash"><div class="splashInner"><img src="uruz-logo.png" alt="Uruz Consultancy"/><div class="sub">BEYOND NUMBERS</div><div class="loader"></div></div></div>
 
 <div class="shell">
 <aside class="sidebar">
-  <div class="brand"><img src="uruz-logo.png" alt="Uruz Consultancy logo"/></div>
-  <div class="profile"><small>FULL ACCESS</small><b>Encik Amir • HOD</b></div>
-  <div class="nav">
-    <button class="active"><span>⌂</span><span class="label">Flow Dashboard</span></button>
-    <button><span>♙</span><span class="label">CRM</span></button>
-    <button><span>▧</span><span class="label">Quotation & Invoice</span></button>
-    <button><span>⌕</span><span class="label">Audit Trail</span></button>
-    <button><span>⚙</span><span class="label">Settings</span></button>
-  </div>
-  <div class="sidebarFooter">URUZ Flow prototype • 2026</div>
+ <div class="brand"><img src="uruz-logo.png" alt="Uruz Consultancy"/></div>
+ <div class="profile"><small>FULL ACCESS</small><b>Encik Amir • HOD</b></div>
+ <div class="nav">
+  <button class="active" data-view="dashboard"><span>⌂</span><span class="label">Flow Dashboard</span></button>
+  <button data-view="crm"><span>♙</span><span class="label">CRM</span></button>
+  <button data-view="bank"><span>▤</span><span class="label">Bank Summary</span></button>
+  <button data-view="tax"><span>∑</span><span class="label">Kiraan Cukai</span></button>
+  <button data-view="billing"><span>▧</span><span class="label">Quotation & Invoice</span></button>
+  <button data-view="audit"><span>⌕</span><span class="label">Audit Trail</span></button>
+ </div>
 </aside>
 
 <main>
-  <div class="header">
-    <div><h1>Flow Dashboard</h1><p>Tengok bottleneck, due dan progress setiap bahagian mengikut tarikh.</p></div>
-    <div class="controls">
-      <div class="control"><label>As of date</label><input class="input" id="asOfDate" type="date"/></div>
-      <button class="btn primary" id="todayBtn">Today</button>
-      <button class="btn ghost" id="refreshBtn">↻ Refresh</button>
+<section id="dashboard" class="view active">
+ <div class="header">
+  <div><h1>Flow Dashboard</h1><p>Due, progress dan bottleneck setiap bahagian mengikut tarikh.</p></div>
+  <div class="controls"><div class="control"><label>As of date</label><input class="input" id="asOfDate" type="date"/></div><button class="btn primary" id="todayBtn">Today</button></div>
+ </div>
+ <div class="searchWrap"><input id="search" class="input" placeholder="Cari company..."/><button class="btn" id="clearSearch">Clear</button></div>
+ <div class="stageStrip" id="stageStrip"></div>
+ <div class="layout">
+  <section class="card"><div class="cardHead"><div><h2 id="tableTitle">Bank Summary</h2><div class="muted" id="tableSub"></div></div><div class="muted" id="tableCount"></div></div><div class="scroll"><table><thead><tr><th>Company</th><th>PIC</th><th>Due</th><th>Days in Stage</th><th>Status</th><th>Payment</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+  <aside class="card"><div class="cardHead"><h2>Attention</h2></div><div class="kpiGrid" id="attentionKpis"></div><div style="height:14px"></div><div id="attentionList"></div></aside>
+ </div>
+</section>
+
+<section id="crm" class="view">
+ <div class="header"><div><h1>CRM</h1><p>Database customer + Sales input + reminder/blast preparation.</p></div><div class="actions"><button class="btn primary" id="addCustomerBtn">+ Add Customer</button><button class="btn">Prepare WhatsApp Blast</button></div></div>
+ <div class="searchWrap"><input id="crmSearch" class="input" placeholder="Cari nama company..."/></div>
+ <div class="card"><div class="scroll"><table><thead><tr><th>Company</th><th>Contact</th><th>Phone</th><th>Email</th><th>Birthday</th><th>Service</th><th>Payment</th><th>Reminder</th></tr></thead><tbody id="crmRows"></tbody></table></div></div>
+</section>
+
+<section id="bank" class="view">
+ <div class="header"><div><h1>Bank Summary Template</h1><p>Input terus dalam sistem. Formula akhir akan ikut template Excel Uruz.</p></div><div class="actions"><button class="btn" id="bankCsv">Export Excel/CSV</button><button class="btn" onclick="window.print()">Export PDF</button><button class="btn primary" id="saveBank">Save Draft</button></div></div>
+ <div class="notice">Prototype formula di bawah hanyalah contoh struktur. Formula sebenar akan diganti 1:1 berdasarkan formula Uruz apabila diterima.</div>
+ <div class="two" style="margin-top:15px">
+  <div class="card">
+   <div class="cardHead"><div><h2>ABC Trading Sdn Bhd</h2><div class="muted">Bank Summary • Aug 2026</div></div><span class="badge on">In Progress</span></div>
+   <div class="scroll">
+    <div class="sheet" id="bankSheet">
+     <div class="sheetRow head"><div>Description</div><div>Debit</div><div>Credit</div><div>Category</div></div>
+     <div class="sheetRow"><input value="Sales / Bank In"/><input class="bdebit" type="number" value="0"/><input class="bcredit" type="number" value="15000"/><input value="Revenue"/></div>
+     <div class="sheetRow"><input value="Supplier Payment"/><input class="bdebit" type="number" value="4200"/><input class="bcredit" type="number" value="0"/><input value="Expense"/></div>
+     <div class="sheetRow"><input value="Operating Expense"/><input class="bdebit" type="number" value="1800"/><input class="bcredit" type="number" value="0"/><input value="Expense"/></div>
+     <div class="sheetRow"><input value="Other Income"/><input class="bdebit" type="number" value="0"/><input class="bcredit" type="number" value="500"/><input value="Other"/></div>
     </div>
+   </div>
+   <div class="kpiGrid" style="margin-top:12px">
+    <div class="miniKpi"><b id="totalDebit">RM0</b><span>Total Debit</span></div>
+    <div class="miniKpi"><b id="totalCredit">RM0</b><span>Total Credit</span></div>
+    <div class="miniKpi"><b id="netMove">RM0</b><span>Net Movement</span></div>
+    <div class="miniKpi"><b style="font-size:14px">Zatty</b><span>Last Edited By</span></div>
+   </div>
   </div>
+  <div class="card"><h2>Edit History</h2><div style="height:10px"></div><div class="timeline"><div class="event"><b>Zatty updated Supplier Payment</b><small>28 Aug 2026 • 2:16 PM</small></div><div class="event"><b>Syiqa created Bank Summary record</b><small>28 Aug 2026 • 10:03 AM</small></div></div></div>
+ </div>
+</section>
 
-  <div class="searchWrap">
-    <input id="search" class="input" placeholder="Cari company..."/>
-    <button class="btn" id="clearSearch">Clear</button>
+<section id="tax" class="view">
+ <div class="header"><div><h1>Kiraan Cukai Template</h1><p>Template input + payment gate + audit edit.</p></div><div class="actions"><button class="btn" id="taxCsv">Export Excel/CSV</button><button class="btn" onclick="window.print()">Export PDF</button><button class="btn primary">Save Draft</button></div></div>
+ <div class="notice">Tax Calculation boleh ditandakan DONE apabila fully paid. Jika partial paid, reasoning wajib diisi.</div>
+ <div class="two" style="margin-top:15px">
+  <div class="card">
+   <h2>ABC Trading Sdn Bhd • YA2025</h2><div style="height:12px"></div>
+   <div class="formgrid">
+    <div class="field"><label>Revenue / Income</label><input id="taxIncome" type="number" value="120000"/></div>
+    <div class="field"><label>Allowable Expenses</label><input id="taxExpense" type="number" value="35000"/></div>
+    <div class="field"><label>Chargeable Income</label><input id="chargeable" readonly/></div>
+    <div class="field"><label>Example Tax Rate (%)</label><input id="taxRate" type="number" value="15"/></div>
+    <div class="field"><label>Estimated Tax</label><input id="estimatedTax" readonly/></div>
+    <div class="field"><label>Payment Status</label><select id="taxPay"><option>Fully Paid</option><option>Partial Paid</option><option>Unpaid</option></select></div>
+    <div class="field span2"><label>Reason if Partial Paid</label><textarea id="partialReason" placeholder="Wajib diisi jika Partial Paid..."></textarea></div>
+   </div>
+   <div style="height:12px"></div><button class="btn success" id="markTaxDone">Mark Tax Calculation DONE</button><div class="muted" id="taxMsg" style="margin-top:8px"></div>
   </div>
+  <div class="card"><h2>Edit History</h2><div style="height:10px"></div><div class="timeline"><div class="event"><b>Ain edited Tax Calculation</b><small>28 Aug 2026 • 2:41 PM</small></div><div class="event"><b>Zatty linked latest Bank Summary</b><small>28 Aug 2026 • 12:15 PM</small></div></div></div>
+ </div>
+</section>
 
-  <div class="stageStrip" id="stageStrip"></div>
+<section id="billing" class="view">
+ <div class="header"><div><h1>Quotation & Invoice</h1><p>Create quotation, amendment/versioning, convert ke invoice dan payment tracking.</p></div><div class="actions"><button class="btn primary" id="newQuoteBtn">+ New Quotation</button><button class="btn">+ New Invoice</button></div></div>
+ <div class="kpiGrid" style="margin-bottom:15px"><div class="miniKpi"><b>6</b><span>Open Quotations</span></div><div class="miniKpi"><b>14</b><span>Invoices</span></div><div class="miniKpi"><b>5</b><span>Unpaid / Partial</span></div><div class="miniKpi"><b>RM18.4k</b><span>Outstanding</span></div></div>
+ <div class="card"><div class="scroll"><table><thead><tr><th>No.</th><th>Company</th><th>Type</th><th>Amount</th><th>Version</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead><tbody id="billingRows"></tbody></table></div></div>
+</section>
 
-  <div class="layout">
-    <section class="card">
-      <div class="cardHead"><div><h2 id="tableTitle">Bank Summary</h2><div class="muted" id="tableSub">Companies dalam bahagian ini</div></div><div class="muted" id="tableCount"></div></div>
-      <div class="scroll"><table>
-        <thead><tr><th>Company</th><th>PIC</th><th>Stage Due</th><th>Days in Stage</th><th>Stage Status</th><th>Payment</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table></div>
-    </section>
-
-    <aside class="card">
-      <div class="cardHead"><div><h2>Attention</h2><div class="muted">As of selected date</div></div></div>
-      <div class="kpiGrid" id="attentionKpis"></div>
-      <div style="height:13px"></div>
-      <div class="sideList" id="attentionList"></div>
-    </aside>
-  </div>
+<section id="audit" class="view">
+ <div class="header"><div><h1>Audit Trail & Efficiency</h1><p>Berapa lama dokumen berada di setiap bahagian + siapa edit.</p></div></div>
+ <div class="two">
+  <div class="card"><h2>ABC Trading Sdn Bhd</h2><div style="height:8px"></div><div class="timeline"><div class="event"><b>Document Intake & Sorting • Syiqa</b><small>0.8 day</small></div><div class="event"><b>Bank Summary • Zatty</b><small>2.8 days</small></div><div class="event"><b>Tax Computation • Ain</b><small>4.3 days</small></div><div class="event"><b>Commercial Closing • Syiqa</b><small>1.6 days</small></div></div></div>
+  <div class="card"><h2>Potential Bottleneck</h2><div style="height:12px"></div><div class="kpiGrid"><div class="miniKpi"><b style="font-size:15px">Tax Computation</b><span>Longest Stage</span></div><div class="miniKpi"><b>4.3d</b><span>Duration</span></div><div class="miniKpi"><b style="font-size:15px">Ain</b><span>PIC</span></div><div class="miniKpi"><b style="font-size:15px;color:#ffc04b">Review</b><span>Status</span></div></div></div>
+ </div>
+</section>
 </main>
 </div>
 
 <nav class="mobileNav">
-  <button><b>⌂</b>Flow</button>
-  <button><b>♙</b>CRM</button>
-  <button><b>▧</b>Billing</button>
-  <button><b>⌕</b>Audit</button>
+ <button data-view="dashboard"><b>⌂</b>Flow</button>
+ <button data-view="crm"><b>♙</b>CRM</button>
+ <button data-view="bank"><b>▤</b>Bank</button>
+ <button data-view="tax"><b>∑</b>Tax</button>
+ <button data-view="billing"><b>▧</b>Billing</button>
 </nav>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="companyTitle">
- <div class="modalCard">
-   <div class="modalHead"><div><h2 id="companyTitle"></h2><div class="muted" id="companySub"></div></div><button class="close" id="closeModal">×</button></div>
-   <div class="detailGrid" id="companyDetails"></div>
-   <div style="height:16px"></div>
-   <h3>Document Trail</h3>
-   <div class="timeline" id="companyTimeline"></div>
- </div>
-</div>
+<div class="modal" id="modal"><div class="modalCard"><div style="display:flex;justify-content:space-between;gap:10px"><div><h2 id="modalTitle" style="margin:0"></h2><div class="muted" id="modalSub"></div></div><button class="close" id="closeModal">×</button></div><div style="height:14px"></div><div id="modalBody"></div></div></div>
 
 <script>
 const STAGES=[
- {id:"sorting",name:"Document Intake & Sorting",short:"Sorting",caption:"Sort docs + check completeness",accent:"#4b91e2"},
- {id:"bank",name:"Bank Summary",short:"Bank Summary",caption:"Prepare & review bank summary",accent:"#43b9b5"},
- {id:"tax",name:"Tax Computation",short:"Tax Computation",caption:"Kiraan cukai + review",accent:"#f0a62d"},
- {id:"closing",name:"Commercial Closing",short:"Closing",caption:"Quotation, invoice & payment",accent:"#8c6bdd"},
- {id:"dispatch",name:"Fulfilment & Dispatch",short:"Dispatch",caption:"Hardcopy, postage & tracking",accent:"#48ba70"}
+ {id:"sorting",name:"Document Intake & Sorting",caption:"Sort docs + check completeness",accent:"#4b91e2"},
+ {id:"bank",name:"Bank Summary",caption:"Prepare & review bank summary",accent:"#43b9b5"},
+ {id:"tax",name:"Tax Computation",caption:"Kiraan cukai + review",accent:"#f0a62d"},
+ {id:"closing",name:"Commercial Closing",caption:"Quotation, invoice & payment",accent:"#8c6bdd"},
+ {id:"dispatch",name:"Fulfilment & Dispatch",caption:"Hardcopy, postage & tracking",accent:"#48ba70"}
 ];
 const jobs=[
- {company:"ABC Trading Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-24",due:"2026-08-28",completed:null,block:"",payment:"Paid",service:"Accounting + Tax",tracking:"",trail:[["24 Aug","Sorting completed • Syiqa"],["24 Aug","Entered Bank Summary • Zatty"]]},
- {company:"Maju Jaya Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-20",due:"2026-08-26",completed:null,block:"Pending Client Docs",payment:"Partial",service:"Tax",tracking:"",trail:[["18 Aug","Docs received • Team Sales"],["20 Aug","Pending bank statement from client"]]},
- {company:"XYZ Enterprise",stage:"tax",pic:"Ain",entered:"2026-08-22",due:"2026-08-27",completed:null,block:"",payment:"Paid",service:"Tax",tracking:"",trail:[["21 Aug","Bank Summary completed • Zatty"],["22 Aug","Entered Tax Computation • Ain"]]},
- {company:"Beta Resources Sdn Bhd",stage:"closing",pic:"Syiqa",entered:"2026-08-23",due:"2026-08-29",completed:null,block:"",payment:"Unpaid",service:"Accounting",tracking:"",trail:[["22 Aug","Tax computation approved • Ain"],["23 Aug","Quotation prepared • Syiqa"]]},
- {company:"Kota Murni Trading",stage:"dispatch",pic:"Syiqa",entered:"2026-08-25",due:"2026-08-30",completed:null,block:"",payment:"Paid",service:"Accounting + Tax",tracking:"PL123456789MY",trail:[["24 Aug","Invoice fully paid"],["25 Aug","Hardcopy prepared"],["26 Aug","Tracking no added • Syiqa"]]},
- {company:"Sinar Timur Enterprise",stage:"sorting",pic:"Syiqa",entered:"2026-08-27",due:"2026-08-29",completed:null,block:"Pending Client Docs",payment:"Unpaid",service:"Tax",tracking:"",trail:[["27 Aug","Docs received"],["27 Aug","Missing bank statements"]]},
- {company:"Azam Maju Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-15",due:"2026-08-24",completed:"2026-08-22",block:"",payment:"Paid",service:"Accounting",tracking:"",trail:[["15 Aug","Entered Bank Summary"],["22 Aug","Bank Summary completed"]]},
- {company:"Permata Jaya Resources",stage:"bank",pic:"Zatty",entered:"2026-08-18",due:"2026-08-25",completed:"2026-08-23",block:"",payment:"Paid",service:"Tax",tracking:"",trail:[["18 Aug","Entered Bank Summary"],["23 Aug","Bank Summary completed"]]},
- {company:"Teguh Niaga Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-19",due:"2026-08-27",completed:"2026-08-26",block:"",payment:"Paid",service:"Accounting",tracking:"",trail:[["19 Aug","Entered Bank Summary"],["26 Aug","Bank Summary completed"]]}
+ {company:"ABC Trading Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-24",due:"2026-08-28",completed:null,block:"",payment:"Paid",service:"Accounting + Tax"},
+ {company:"Maju Jaya Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-20",due:"2026-08-26",completed:null,block:"Pending Client Docs",payment:"Partial",service:"Tax"},
+ {company:"XYZ Enterprise",stage:"tax",pic:"Ain",entered:"2026-08-22",due:"2026-08-27",completed:null,block:"",payment:"Paid",service:"Tax"},
+ {company:"Beta Resources Sdn Bhd",stage:"closing",pic:"Syiqa",entered:"2026-08-23",due:"2026-08-29",completed:null,block:"",payment:"Unpaid",service:"Accounting"},
+ {company:"Kota Murni Trading",stage:"dispatch",pic:"Syiqa",entered:"2026-08-25",due:"2026-08-30",completed:null,block:"",payment:"Paid",service:"Accounting + Tax"},
+ {company:"Sinar Timur Enterprise",stage:"sorting",pic:"Syiqa",entered:"2026-08-27",due:"2026-08-29",completed:null,block:"Pending Client Docs",payment:"Unpaid",service:"Tax"},
+ {company:"Azam Maju Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-15",due:"2026-08-24",completed:"2026-08-22",block:"",payment:"Paid",service:"Accounting"},
+ {company:"Permata Jaya Resources",stage:"bank",pic:"Zatty",entered:"2026-08-18",due:"2026-08-25",completed:"2026-08-23",block:"",payment:"Paid",service:"Tax"},
+ {company:"Teguh Niaga Sdn Bhd",stage:"bank",pic:"Zatty",entered:"2026-08-19",due:"2026-08-27",completed:"2026-08-26",block:"",payment:"Paid",service:"Accounting"}
+];
+const customers=[
+ ["ABC Trading Sdn Bhd","Ahmad","012-3456789","ahmad@abc.com","12 Sep","Accounting + Tax","Paid","Document Reminder"],
+ ["Maju Jaya Sdn Bhd","Farah","013-4455667","farah@maju.com","3 Oct","Tax","Partial","Payment Reminder"],
+ ["Beta Resources Sdn Bhd","Hafiz","017-2233445","hafiz@beta.com","19 Nov","Accounting","Unpaid","Document Reminder"],
+ ["XYZ Enterprise","Aina","019-9988776","aina@xyz.com","7 Aug","Tax","Paid","Birthday Greeting"]
+];
+let quotations=[
+ {no:"QT-2026-0031",company:"ABC Trading Sdn Bhd",type:"Quotation",amount:3500,version:2,payment:"-",status:"Approved"},
+ {no:"QT-2026-0032",company:"Beta Resources Sdn Bhd",type:"Quotation",amount:2200,version:1,payment:"-",status:"Awaiting Client"},
+ {no:"INV-2026-0088",company:"Maju Jaya Sdn Bhd",type:"Invoice",amount:4800,version:"-",payment:"Partial",status:"Issued"},
+ {no:"INV-2026-0091",company:"Beta Resources Sdn Bhd",type:"Invoice",amount:2200,version:"-",payment:"Unpaid",status:"Issued"}
 ];
 let selectedStage="bank";
-const $=q=>document.querySelector(q);
-function dateOnly(s){return new Date(s+"T00:00:00")}
-function daysBetween(a,b){return Math.max(0,Math.floor((dateOnly(b)-dateOnly(a))/86400000))}
-function statusFor(j,asof){
-  if(j.completed && j.completed<=asof) return "Completed";
-  if(j.block) return "Pending Docs";
-  if(j.due<asof) return "Due";
-  return "On Track";
+const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
+function show(id){$$(".view").forEach(v=>v.classList.remove("active"));$("#"+id).classList.add("active");$$("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
+$$("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
+function dateOnly(s){return new Date(s+"T00:00:00")} function daysBetween(a,b){return Math.max(0,Math.floor((dateOnly(b)-dateOnly(a))/86400000))}
+function badge(s){const cls={Paid:"paid",Unpaid:"unpaid",Partial:"partial","On Track":"on","Pending Docs":"pending",Due:"due",Completed:"done"}[s]||"on";return `<span class="badge ${cls}">${s}</span>`}
+function statusFor(j,asof){if(j.completed&&j.completed<=asof)return"Completed";if(j.block)return"Pending Docs";if(j.due<=asof)return"Due";return"On Track"}
+function stats(stage,asof){const a=jobs.filter(j=>j.stage===stage&&j.entered<=asof);return{total:a.length,pending:a.filter(j=>!j.completed&&j.block).length,done:a.filter(j=>j.completed&&j.completed<=asof).length,due:a.filter(j=>!j.completed&&!j.block&&j.due<=asof).length}}
+function renderDashboard(){
+ const asof=$("#asOfDate").value,q=$("#search").value.trim().toLowerCase();
+ $("#stageStrip").innerHTML=STAGES.map((s,i)=>{const n=stats(s.id,asof);return `<button class="stageCard" data-stage="${s.id}" style="--accent:${s.accent}"><div class="num">0${i+1}</div><h3>${s.name}</h3><div class="caption">${s.caption}</div><div class="stageStats"><div><b>${n.total}</b><small>Companies</small></div><div><b style="color:#ffc04b">${n.pending}</b><small>Pending Docs</small></div><div><b style="color:#7bb7ff">${n.done}</b><small>Completed</small></div><div><b style="color:#ff7070">${n.due}</b><small>Due</small></div></div></button>`}).join("");
+ $$("[data-stage]").forEach(b=>b.onclick=()=>{selectedStage=b.dataset.stage;renderDashboard()});
+ const s=STAGES.find(x=>x.id===selectedStage);let arr=jobs.filter(j=>j.stage===selectedStage&&j.entered<=asof);if(q)arr=arr.filter(j=>j.company.toLowerCase().includes(q));
+ $("#tableTitle").textContent=s.name;$("#tableSub").textContent=s.caption;$("#tableCount").textContent=arr.length+" companies";
+ $("#rows").innerHTML=arr.map(j=>`<tr><td><button class="companyBtn">${j.company}</button></td><td>${j.pic}</td><td>${j.due}</td><td>${daysBetween(j.entered,(j.completed&&j.completed<=asof)?j.completed:asof)} days</td><td>${badge(statusFor(j,asof))}</td><td>${badge(j.payment)}</td></tr>`).join("")||`<tr><td colspan="6" class="muted" style="text-align:center;padding:24px">Tiada company.</td></tr>`;
+ const active=jobs.filter(j=>j.entered<=asof&&!(j.completed&&j.completed<=asof)),due=active.filter(j=>j.due<=asof&&!j.block),pending=active.filter(j=>j.block),unpaid=active.filter(j=>j.payment!=="Paid");
+ $("#attentionKpis").innerHTML=`<div class="miniKpi"><b style="color:#ff7070">${due.length}</b><span>Due</span></div><div class="miniKpi"><b style="color:#ffc04b">${pending.length}</b><span>Pending Docs</span></div><div class="miniKpi"><b style="color:#bca4ff">${unpaid.length}</b><span>Unpaid/Partial</span></div><div class="miniKpi"><b style="color:#68d989">${active.filter(j=>j.stage==="dispatch").length}</b><span>Dispatch</span></div>`;
+ $("#attentionList").innerHTML=[...due,...pending].slice(0,5).map(j=>`<div style="padding:10px 0;border-bottom:1px solid #1c394d"><b>${j.company}</b><div class="muted">${j.pic} • ${statusFor(j,asof)}</div></div>`).join("");
 }
-function badge(s){
- const map={"On Track":"on","Pending Docs":"pending","Due":"due","Completed":"done","Paid":"paid","Unpaid":"unpaid","Partial":"partial"};
- return `<span class="badge ${map[s]||"on"}">${s}</span>`;
-}
-function stats(stage,asof){
- const arr=jobs.filter(j=>j.stage===stage && j.entered<=asof);
- return {
-   total:arr.length,
-   pending:arr.filter(j=>!j.completed && !!j.block).length,
-   done:arr.filter(j=>j.completed && j.completed<=asof).length,
-   due:arr.filter(j=>!j.completed && !j.block && j.due<=asof).length
- }
-}
-function renderStages(){
- const asof=$("#asOfDate").value;
- $("#stageStrip").innerHTML=STAGES.map((s,i)=>{
-   const n=stats(s.id,asof);
-   return `<button class="stageCard ${selectedStage===s.id?"active":""}" data-stage="${s.id}" style="--accent:${s.accent}">
-     <div class="num">0${i+1}</div><h3>${s.name}</h3><div class="caption">${s.caption}</div>
-     <div class="stageStats">
-       <div><b>${n.total}</b><small>Companies</small></div>
-       <div><b class="amber">${n.pending}</b><small>Pending Docs</small></div>
-       <div><b class="blue">${n.done}</b><small>Completed</small></div>
-       <div><b class="red">${n.due}</b><small>Due</small></div>
-     </div>
-   </button>`
- }).join("");
- document.querySelectorAll("[data-stage]").forEach(b=>b.onclick=()=>{selectedStage=b.dataset.stage;render()});
-}
-function renderTable(){
- const asof=$("#asOfDate").value;
- const stage=STAGES.find(s=>s.id===selectedStage);
- const q=$("#search").value.trim().toLowerCase();
- let arr=jobs.filter(j=>j.stage===selectedStage && j.entered<=asof);
- if(q) arr=arr.filter(j=>j.company.toLowerCase().includes(q));
- $("#tableTitle").textContent=stage.name;
- $("#tableSub").textContent=stage.caption;
- $("#tableCount").textContent=arr.length+" companies";
- $("#rows").innerHTML=arr.length?arr.map(j=>{
-   const st=statusFor(j,asof);
-   const end=(j.completed&&j.completed<=asof)?j.completed:asof;
-   return `<tr>
-     <td><button class="companyBtn" data-company="${j.company}">${j.company}</button></td>
-     <td>${j.pic}</td><td>${j.due}</td><td>${daysBetween(j.entered,end)} days</td>
-     <td>${badge(st)}</td><td>${badge(j.payment)}</td>
-   </tr>`
- }).join(""):`<tr><td colspan="6" class="muted" style="padding:24px;text-align:center">Tiada company untuk filter ini.</td></tr>`;
- document.querySelectorAll("[data-company]").forEach(b=>b.onclick=()=>openCompany(b.dataset.company));
-}
-function renderAttention(){
- const asof=$("#asOfDate").value;
- const active=jobs.filter(j=>j.entered<=asof && !(j.completed&&j.completed<=asof));
- const due=active.filter(j=>j.due<=asof && !j.block);
- const pending=active.filter(j=>j.block);
- const unpaid=active.filter(j=>j.payment!=="Paid");
- const dispatch=active.filter(j=>j.stage==="dispatch");
- $("#attentionKpis").innerHTML=`
-   <div class="miniKpi"><b class="red">${due.length}</b><span>Due</span></div>
-   <div class="miniKpi"><b class="amber">${pending.length}</b><span>Pending Docs</span></div>
-   <div class="miniKpi"><b class="purple">${unpaid.length}</b><span>Unpaid/Partial</span></div>
-   <div class="miniKpi"><b class="green">${dispatch.length}</b><span>Dispatch</span></div>`;
- const items=[...due,...pending].slice(0,5);
- $("#attentionList").innerHTML=items.length?items.map(j=>`<div class="sideItem"><div><b>${j.company}</b><small>${STAGES.find(s=>s.id===j.stage).short} • ${j.pic}</small></div><div>${badge(statusFor(j,asof))}</div></div>`).join(""):`<div class="muted">No urgent items.</div>`;
-}
-function openCompany(name){
- const j=jobs.find(x=>x.company===name),asof=$("#asOfDate").value;
- $("#companyTitle").textContent=j.company;
- $("#companySub").textContent=j.service;
- $("#companyDetails").innerHTML=`
- <div class="detailBox"><small>Current Stage</small><b>${STAGES.find(s=>s.id===j.stage).name}</b></div>
- <div class="detailBox"><small>PIC</small><b>${j.pic}</b></div>
- <div class="detailBox"><small>Stage Due</small><b>${j.due}</b></div>
- <div class="detailBox"><small>Status</small>${badge(statusFor(j,asof))}</div>
- <div class="detailBox"><small>Payment</small>${badge(j.payment)}</div>
- <div class="detailBox"><small>Postage Tracking</small><b>${j.tracking||"Not available"}</b></div>`;
- $("#companyTimeline").innerHTML=j.trail.map(x=>`<div class="event"><b>${x[1]}</b><small>${x[0]}</small></div>`).join("");
- $("#modal").classList.add("show");
-}
-function render(){renderStages();renderTable();renderAttention()}
-const today="2026-08-28";$("#asOfDate").value=today;
-$("#asOfDate").addEventListener("change",render);
-$("#todayBtn").onclick=()=>{$("#asOfDate").value=today;render()};
-$("#refreshBtn").onclick=render;
-$("#search").addEventListener("input",renderTable);
-$("#clearSearch").onclick=()=>{$("#search").value="";renderTable()};
-$("#closeModal").onclick=()=>$("#modal").classList.remove("show");
-$("#modal").addEventListener("click",e=>{if(e.target===$("#modal"))$("#modal").classList.remove("show")});
+function renderCRM(){const q=$("#crmSearch").value.trim().toLowerCase();$("#crmRows").innerHTML=customers.filter(c=>c[0].toLowerCase().includes(q)).map(c=>`<tr>${c.map((v,i)=>i===6?`<td>${badge(v)}</td>`:`<td>${v}</td>`).join("")}</tr>`).join("")}
+function renderBilling(){ $("#billingRows").innerHTML=quotations.map((q,i)=>`<tr><td>${q.no}</td><td>${q.company}</td><td>${q.type}</td><td>RM${q.amount.toLocaleString()}</td><td>${q.version}</td><td>${q.payment==="-"?"-":badge(q.payment)}</td><td>${q.status}</td><td>${q.type==="Quotation"?`<button class="btn" data-amend="${i}">Amend</button>`:`<button class="btn">View</button>`}</td></tr>`).join("");$$("[data-amend]").forEach(b=>b.onclick=()=>{let q=quotations[+b.dataset.amend];q.version=Number(q.version)+1;renderBilling();alert(`${q.no} amended to version v${q.version}`)})}
+function updateBank(){let d=[...$$(".bdebit")].reduce((a,x)=>a+(+x.value||0),0),c=[...$$(".bcredit")].reduce((a,x)=>a+(+x.value||0),0);$("#totalDebit").textContent=`RM${d.toLocaleString()}`;$("#totalCredit").textContent=`RM${c.toLocaleString()}`;$("#netMove").textContent=`RM${(c-d).toLocaleString()}`}
+$$(".bdebit,.bcredit").forEach(x=>x.addEventListener("input",updateBank));updateBank();
+function updateTax(){let inc=+$("#taxIncome").value||0,exp=+$("#taxExpense").value||0,chg=Math.max(0,inc-exp),rate=+$("#taxRate").value||0;$("#chargeable").value=chg.toFixed(2);$("#estimatedTax").value=(chg*rate/100).toFixed(2)}
+["taxIncome","taxExpense","taxRate"].forEach(id=>$("#"+id).addEventListener("input",updateTax));updateTax();
+$("#markTaxDone").onclick=()=>{const s=$("#taxPay").value,r=$("#partialReason").value.trim();if(s==="Unpaid"){ $("#taxMsg").textContent="Tidak boleh DONE: customer belum bayar."; return } if(s==="Partial Paid"&&!r){$("#taxMsg").textContent="Reason wajib untuk Partial Paid.";return}$("#taxMsg").textContent="Tax Calculation ditanda DONE (prototype)."}
+function exportCSV(rows,filename){const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");const blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href)}
+$("#bankCsv").onclick=()=>exportCSV([["Description","Debit","Credit","Category"],["Sales / Bank In",0,15000,"Revenue"],["Supplier Payment",4200,0,"Expense"],["Operating Expense",1800,0,"Expense"],["Other Income",0,500,"Other"]],"URUZ_Bank_Summary.csv");
+$("#taxCsv").onclick=()=>exportCSV([["Company","Income","Expenses","Chargeable Income","Tax Rate","Estimated Tax"],["ABC Trading Sdn Bhd",$("#taxIncome").value,$("#taxExpense").value,$("#chargeable").value,$("#taxRate").value,$("#estimatedTax").value]],"URUZ_Tax_Computation.csv");
+$("#asOfDate").value="2026-08-28";$("#todayBtn").onclick=()=>{$("#asOfDate").value="2026-08-28";renderDashboard()};$("#asOfDate").onchange=renderDashboard;$("#search").oninput=renderDashboard;$("#clearSearch").onclick=()=>{$("#search").value="";renderDashboard()};$("#crmSearch").oninput=renderCRM;
+$("#addCustomerBtn").onclick=()=>alert("Prototype: form Add Customer akan disambung ke database live nanti.");
+$("#newQuoteBtn").onclick=()=>{quotations.unshift({no:"QT-2026-0033",company:"New Demo Company",type:"Quotation",amount:1800,version:1,payment:"-",status:"Draft"});renderBilling()}
+renderDashboard();renderCRM();renderBilling();
 setTimeout(()=>$("#splash").classList.add("hide"),3000);
-render();
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+if("serviceWorker"in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
 </script>
 </body>
 </html>

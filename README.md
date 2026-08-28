@@ -1,33 +1,26 @@
-# Uruz Flow Prototype
+# URUZ Flow Prototype v4
 
-Static responsive prototype for GitHub Pages.
+Flat GitHub Pages structure. No assets folder.
 
-## Deploy to GitHub Pages
-1. Create a new GitHub repository.
-2. Upload all files in this folder to the repository root.
-3. Open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select `main` and `/ (root)`, then Save.
-6. GitHub will provide the public URL.
+## Deploy
+Upload every file in this folder to the repository root:
+- index.html
+- manifest.json
+- sw.js
+- uruz-logo.png
+- icon-192.png
+- icon-512.png
 
-## Included
-- Responsive desktop/tablet/mobile dashboard
-- Uruz Consultancy branding/logo
-- 3-second splash animation with blended Uruz branding and tagline “BEYOND NUMBERS”
-- PWA manifest + service worker
-- As-of-date filter
-- Stage dashboard:
-  - Document Intake & Sorting
-  - Bank Summary
-  - Tax Computation
-  - Commercial Closing
-  - Fulfilment & Dispatch
-- Company search
-- Due / Pending Docs / Completed / Payment status
-- Company detail + document trail modal
+Then enable GitHub Pages from the main branch root.
 
-This is a prototype with demo data only.
+## This version includes
+- Flow Dashboard with As-of Date
+- CRM populated with demo customer data
+- Bank Summary editable template + live totals + CSV/PDF export
+- Tax Computation editable template + example formula + payment gate + CSV/PDF export
+- Quotation & Invoice page with quotation amendment/versioning demo
+- Audit Trail & Efficiency
+- 3-second branded splash screen
+- Responsive mobile layout + PWA files
 
-
-## Flat structure
-All deployable files, including logo and icons, are stored in the repository root. No `assets` folder is required.
+Note: real Uruz formulas are still pending. Replace prototype formulas once the actual Excel formulas/templates are provided.
