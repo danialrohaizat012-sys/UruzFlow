@@ -24,3 +24,9 @@ Then enable GitHub Pages from the main branch root.
 - Responsive mobile layout + PWA files
 
 Note: real Uruz formulas are still pending. Replace prototype formulas once the actual Excel formulas/templates are provided.
+
+## v6 branding
+- PWA icon: centered Uruz emblem with `Uruz Flow` inside the icon.
+- Browser favicon: scalable `favicon.svg`.
+- PNG favicon fallbacks: 32px and 16px.
+- Flat root structure retained.
