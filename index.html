@@ -153,8 +153,7 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
   border-radius:12px;
   box-sizing:border-box;
 }
-#authUser.accountBar[style*="display: flex"],
-#authUser.accountBar[style*="display:flex"]{display:flex!important}
+#authUser.accountBar{display:none!important}
 #authUser.accountBar .btn{flex:0 0 auto}
 #authUser.accountBar .muted,
 #authUser.accountBar small{white-space:nowrap}
@@ -184,6 +183,21 @@ main{position:relative}
  #mobileAccountBar .btn{padding:7px 10px;font-size:11px;width:auto!important}
 }
 @media(min-width:521px){#mobileAccountBar{display:none!important}}
+
+/* V17.7 hard fix: zero floating account overlay */
+#authUser,#mobileAccountBar{display:none!important;position:static!important;pointer-events:none!important}
+.sidebarLogout{
+ position:fixed;
+ left:18px;
+ bottom:18px;
+ width:calc(var(--side) - 36px);
+ z-index:5;
+}
+.navLogout{display:none}
+@media(max-width:900px){
+ .sidebarLogout{display:none!important}
+ .navLogout{display:inline-flex!important;position:static!important;z-index:auto!important;width:auto!important;flex:0 0 auto!important}
+}
 </style>
 </head>
 <body>
@@ -217,15 +231,7 @@ main{position:relative}
  </div>
 </aside>
 
-<div id="mobileAccountBar">
-  <span><b>Encik Amir</b> · Full Access</span>
-  <button class="btn" id="mobileLogoutBtn" type="button">Log Out</button>
-</div>
-<main>
-<div id="authUser" class="authUser" class="accountBar"><span id="authName">Encik Amir • Full Access</span><button id="logoutBtn" class="btn" style="min-height:auto;padding:5px 8px">Logout</button></div>
 
-<section id="dashboard" class="view active">
- <div class="header"><div><h1>Flow Dashboard</h1><p>Live work queues + Stage Handoff. Klik nama company untuk gerakkan job, assign PIC, set due atau mark waiting.</p></div><div class="controls"><div class="control"><label>As of date</label><input class="input" id="asOfDate" type="date"/></div><button class="btn primary" id="todayBtn">Today</button></div></div>
  <div class="searchWrap"><input id="search" class="input" placeholder="Cari company..."/><button class="btn" id="clearSearch">Clear</button></div>
  <div class="stageStrip" id="stageStrip"></div>
  <div class="layout"><section class="card"><div class="cardHead"><div><h2 id="tableTitle">Bank Summary</h2><div class="muted" id="tableSub"></div></div><div class="muted" id="tableCount"></div></div><div class="scroll"><table><thead><tr><th>Company</th><th>PIC</th><th>Due</th><th>Days in Stage</th><th>Status</th><th>Payment</th></tr></thead><tbody id="rows"></tbody></table></div></section>
@@ -728,6 +734,11 @@ if("serviceWorker"in navigator){addEventListener("load",()=>navigator.serviceWor
 const mobileLogoutBtn=document.querySelector("#mobileLogoutBtn");
 if(mobileLogoutBtn) mobileLogoutBtn.addEventListener("click",()=>document.querySelector("#logoutBtn")?.click());
 
+
+["sidebarLogoutBtn","navLogoutBtn"].forEach(id=>{
+ const b=document.getElementById(id);
+ if(b)b.addEventListener("click",()=>document.getElementById("logoutBtn")?.click());
+});
 </script>
 
 <script type="module">
@@ -817,4 +828,5 @@ try{
 </script>
 
 <div id="printReport"></div></body>
-</html>
+</html<button id="sidebarLogoutBtn" class="btn sidebarLogout" type="button">Log Out</button>
+>
