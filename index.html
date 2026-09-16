@@ -80,6 +80,10 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 @keyframes uruzSplashFailSafe{0%,92%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden;pointer-events:none}}
 #splash{animation:uruzSplashFailSafe 3.35s forwards}
 #splash.hide{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+
+.workflowModal{position:fixed;inset:0;z-index:500;background:rgba(2,10,17,.76);display:none;place-items:center;padding:18px}.workflowModal.show{display:grid}.workflowCard{width:min(720px,100%);max-height:90vh;overflow:auto;background:#0b2030;border:1px solid #355269;border-radius:16px;padding:20px;box-shadow:0 30px 90px rgba(0,0,0,.45)}
+.flowTrack{display:flex;gap:7px;overflow:auto;padding:10px 0 16px}.flowNode{min-width:105px;padding:9px;border:1px solid #29465a;border-radius:9px;color:#8fa5b4;font-size:10px}.flowNode.current{border-color:#4b91e2;color:#fff;background:#12324a}.flowNode.done{border-color:#48ba70;color:#7fe39c}.jobActions{display:flex;gap:8px;flex-wrap:wrap}.jobLink{cursor:pointer;color:#7bb7ff;text-decoration:underline}.blockPanel{padding:12px;border:1px solid #59441f;background:#302512;border-radius:10px;margin:10px 0}.handoffGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.timeline{display:grid;gap:7px}.timelineItem{padding:9px 11px;border-left:2px solid #355269;background:#081b29;border-radius:0 8px 8px 0;font-size:11px}
+@media(max-width:640px){.handoffGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -114,7 +118,7 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 </aside>
 <main>
 <section id="dashboard" class="view active">
- <div class="header"><div><h1>Flow Dashboard</h1><p>6-stage operational flow Uruz, termasuk ACC Preparation selepas payment.</p></div><div class="controls"><div class="control"><label>As of date</label><input class="input" id="asOfDate" type="date"/></div><button class="btn primary" id="todayBtn">Today</button></div></div>
+ <div class="header"><div><h1>Flow Dashboard</h1><p>Live work queues + Stage Handoff. Klik nama company untuk gerakkan job, assign PIC, set due atau mark waiting.</p></div><div class="controls"><div class="control"><label>As of date</label><input class="input" id="asOfDate" type="date"/></div><button class="btn primary" id="todayBtn">Today</button></div></div>
  <div class="searchWrap"><input id="search" class="input" placeholder="Cari company..."/><button class="btn" id="clearSearch">Clear</button></div>
  <div class="stageStrip" id="stageStrip"></div>
  <div class="layout"><section class="card"><div class="cardHead"><div><h2 id="tableTitle">Bank Summary</h2><div class="muted" id="tableSub"></div></div><div class="muted" id="tableCount"></div></div><div class="scroll"><table><thead><tr><th>Company</th><th>PIC</th><th>Due</th><th>Days in Stage</th><th>Status</th><th>Payment</th></tr></thead><tbody id="rows"></tbody></table></div></section>
@@ -207,6 +211,7 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
  <button data-view="dashboard"><b>⌂</b>Flow</button><button data-view="bank"><b>▤</b>Bank</button><button data-view="tax"><b>∑</b>Tax</button><button data-view="billing"><b>▧</b>Billing</button><button data-view="acc"><b>✓</b>ACC</button>
 </nav>
 
+<div id="workflowModal" class="workflowModal"><div class="workflowCard"><div class="cardHead"><div><h2 id="wfTitle">Job Movement</h2><div id="wfSub" class="muted"></div></div><button class="btn" id="wfClose">Close</button></div><div id="wfTrack" class="flowTrack"></div><div id="wfBody"></div></div></div>
 <script>
 const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
 function show(id){$$(".view").forEach(v=>v.classList.remove("active"));$("#"+id).classList.add("active");$$("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
@@ -219,6 +224,18 @@ const STAGES=[
 {id:"closing",name:"Commercial Closing",caption:"Quotation, invoice & payment",accent:"#8c6bdd"},
 {id:"acc",name:"ACC Preparation",caption:"Akaun + Ledger",accent:"#e88f48"},
 {id:"dispatch",name:"Fulfilment & Dispatch",caption:"Hardcopy + postage",accent:"#48ba70"}];
+const WORKFLOW_TEMPLATES={
+ "Account & Tax":["sorting","bank","tax","closing","acc","dispatch"],
+ "Bookkeeping":["sorting","bank","closing","acc","dispatch"],
+ "HR Service":["sorting","closing","dispatch"],
+ "SSM Registration":["sorting","closing","dispatch"],
+ "Stamping":["sorting","closing","dispatch"],
+ "Form P":["sorting","tax","closing","dispatch"],
+ "Other Services":["sorting","closing","dispatch"]
+};
+const stageLabel=id=>STAGES.find(s=>s.id===id)?.name||id;
+const workflowFor=j=>j.workflow?.length?j.workflow:(WORKFLOW_TEMPLATES[j.service]||WORKFLOW_TEMPLATES["Other Services"]);
+
 const jobs=[]; window.jobs=jobs;
 let selectedStage="sorting";
 function d(s){return new Date(s+"T00:00:00")} function days(a,b){return Math.max(0,Math.floor((d(b)-d(a))/86400000))}
@@ -228,12 +245,12 @@ function renderDash(){const a=$("#asOfDate").value,q=$("#search").value.toLowerC
 $$("[data-stage]").forEach(b=>b.onclick=()=>{selectedStage=b.dataset.stage;renderDash()});
 let s=STAGES.find(x=>x.id===selectedStage), ar=jobs.filter(j=>j.stage===selectedStage&&j.entered<=a&&(!q||j.company.toLowerCase().includes(q)));
 $("#tableTitle").textContent=s.name;$("#tableSub").textContent=s.caption;$("#tableCount").textContent=ar.length+" companies";
-$("#rows").innerHTML=ar.map(j=>`<tr><td>${j.company}</td><td>${j.pic}</td><td>${j.due}</td><td>${days(j.entered,a)} days</td><td>${badge(stat(j,a))}</td><td>${badge(j.payment)}</td></tr>`).join("")||`<tr><td colspan="6" class="muted">Tiada rekod.</td></tr>`;
+$("#rows").innerHTML=ar.map(j=>`<tr><td><span class="jobLink" data-open-job="${j.id||''}">${j.company}</span></td><td>${j.pic}</td><td>${j.due}</td><td>${days(j.entered,a)} days</td><td>${badge(stat(j,a))}</td><td>${badge(j.payment)}</td></tr>`).join("")||`<tr><td colspan="6" class="muted">Tiada rekod.</td></tr>`;$$('[data-open-job]').forEach(x=>x.onclick=()=>openWorkflow(x.dataset.openJob));
 let active=jobs.filter(j=>j.entered<=a), dueN=active.filter(j=>j.due<=a&&!j.block).length,pending=active.filter(j=>j.block).length,unpaid=active.filter(j=>j.payment!=="Paid").length;
 $("#attentionKpis").innerHTML=`<div class="miniKpi"><b>${dueN}</b><span>Due</span></div><div class="miniKpi"><b>${pending}</b><span>Pending Docs</span></div><div class="miniKpi"><b>${unpaid}</b><span>Unpaid/Partial</span></div><div class="miniKpi"><b>${active.filter(j=>j.stage==="acc").length}</b><span>ACC Prep</span></div>`;
 $("#attentionList").innerHTML=active.filter(j=>j.block||j.due<=a).map(j=>`<div style="padding:9px 0;border-bottom:1px solid #1c394d"><b>${j.company}</b><div class="muted">${j.pic} • ${stat(j,a)}</div></div>`).join("");
 }
-$("#asOfDate").value="2026-09-03";$("#todayBtn").onclick=()=>{$("#asOfDate").value="2026-09-03";renderDash()};$("#asOfDate").onchange=renderDash;$("#search").oninput=renderDash;$("#clearSearch").onclick=()=>{$("#search").value="";renderDash()};
+const todayISO=()=>new Date().toISOString().slice(0,10);$("#asOfDate").value=todayISO();$("#todayBtn").onclick=()=>{$("#asOfDate").value=todayISO();renderDash()};$("#asOfDate").onchange=renderDash;$("#search").oninput=renderDash;$("#clearSearch").onclick=()=>{$("#search").value="";renderDash()};
 
 const crm=[];
 
@@ -359,10 +376,10 @@ $("#createJobBtn").onclick=async()=>{
      companyPic,pic:"Syiqa",stagePic:"Syiqa",stage:"sorting",
      overallDue:$("#intakeDue").value,stageDue:$("#intakeStageDue").value,
      notes:$("#intakeNotes").value.trim(),createdBy:"Syiqa",
-     createdAt:new Date().toISOString(),paymentStatus:"Unpaid"
+     createdAt:new Date().toISOString(),paymentStatus:"Unpaid",workflow:WORKFLOW_TEMPLATES[$("#intakeService").value]||WORKFLOW_TEMPLATES["Other Services"],stageStartedAt:new Date().toISOString(),status:"active",movementHistory:[{from:null,to:"sorting",by:"Syiqa",at:new Date().toISOString(),note:"Job opened via Doc Intake"}]
    };
    appState.jobs.push(job);
-   jobs.push({company:name,stage:"sorting",pic:"Syiqa",entered:job.createdAt.slice(0,10),due:job.stageDue||job.overallDue||"9999-12-31",completed:null,block:"",payment:"Unpaid"});
+   jobs.push({id:job.id,company:name,service:job.service,stage:"sorting",pic:"Syiqa",entered:job.createdAt.slice(0,10),due:job.stageDue||job.overallDue||"9999-12-31",completed:null,block:"",payment:"Unpaid"});
 
    renderCRM();refreshOperationalSelectors();renderDash();
    msg.style.color="#7fe39c";
@@ -382,6 +399,24 @@ $("#createJobBtn").onclick=async()=>{
    btn.disabled=false;btn.textContent="Open Job";
  }
 };
+
+
+let activeWorkflowJobId=null;
+const wfModal=$("#workflowModal");$("#wfClose").onclick=()=>wfModal.classList.remove("show");
+function syncMirror(job){const c=appState.companies.find(x=>x.id===job.companyId);let m=jobs.find(x=>x.id===job.id);if(!m){m={id:job.id};jobs.push(m)}Object.assign(m,{company:c?.name||"-",service:job.service,stage:job.stage,pic:job.stagePic||job.pic||"-",entered:(job.stageStartedAt||job.createdAt||todayISO()).slice(0,10),due:job.stageDue||job.overallDue||"9999-12-31",completed:job.status==="closed"?todayISO():null,block:job.blockReason||"",payment:job.paymentStatus||"Unpaid"})}
+async function persistMovement(job,action,details={}){const F=window.URUZ_FIREBASE;if(!F?.db)return;await F.setDoc(F.doc(F.db,"jobs",job.id),job,{merge:true});await F.addDoc(F.collection(F.db,"auditLogs"),{companyId:job.companyId,jobId:job.id,action,stage:job.stage,details,createdAt:F.serverTimestamp(),createdBy:F.auth?.currentUser?.uid||null})}
+function openWorkflow(id){activeWorkflowJobId=id;const job=appState.jobs.find(j=>j.id===id);if(!job)return;const c=appState.companies.find(x=>x.id===job.companyId),flow=workflowFor(job),idx=flow.indexOf(job.stage);$("#wfTitle").textContent=c?.name||"Job Movement";$("#wfSub").textContent=`${job.id} • ${job.service} • ${job.period||"No period"}`;$("#wfTrack").innerHTML=flow.map((s,i)=>`<div class="flowNode ${i<idx?'done':i===idx?'current':''}">${i<idx?'✓ ':i===idx?'● ':'○ '}${stageLabel(s)}</div>`).join('');
+ const history=(job.movementHistory||[]).slice().reverse();const next=flow[idx+1];const isBlocked=!!job.blockReason;
+ $("#wfBody").innerHTML=`<div class="metaGrid"><div class="miniKpi"><b>${stageLabel(job.stage)}</b><span>Current Stage</span></div><div class="miniKpi"><b>${job.stagePic||job.pic||'-'}</b><span>Stage PIC</span></div><div class="miniKpi"><b>${job.stageDue||'-'}</b><span>Stage Due</span></div></div>
+ ${isBlocked?`<div class="blockPanel"><b>WAITING / BLOCKED</b><div>${job.blockReason}</div><div class="muted">Since ${job.blockedAt?.slice(0,10)||'-'}</div></div>`:''}
+ <div style="height:12px"></div><div class="jobActions"><button class="btn ${isBlocked?'primary':''}" id="wfBlockBtn">${isBlocked?'Resume Job':'Mark Waiting / Blocked'}</button>${next?`<button class="btn primary" id="wfHandoffBtn" ${isBlocked?'disabled':''}>Complete & Send → ${stageLabel(next)}</button>`:`<button class="btn primary" id="wfCloseJob" ${isBlocked?'disabled':''}>Close Job</button>`}</div>
+ <div id="wfActionArea"></div><div style="height:18px"></div><h2>Movement History</h2><div class="timeline">${history.length?history.map(x=>`<div class="timelineItem"><b>${x.from?stageLabel(x.from)+' → ':''}${stageLabel(x.to||job.stage)}</b><div class="muted">${x.by||'-'} • ${(x.at||'').replace('T',' ').slice(0,16)} ${x.note?'• '+x.note:''}</div></div>`).join(''):'<div class="muted">No movement yet.</div>'}</div>`;
+ $("#wfBlockBtn").onclick=()=>{if(isBlocked)resumeJob(job);else showBlockForm(job)};if(next)$("#wfHandoffBtn").onclick=()=>showHandoffForm(job,next);else $("#wfCloseJob").onclick=()=>closeJob(job);wfModal.classList.add("show")}
+function showBlockForm(job){$("#wfActionArea").innerHTML=`<div class="card" style="margin-top:12px"><div class="field"><label>Reason</label><select id="blockType"><option>Waiting Client Document</option><option>Waiting Client Confirmation</option><option>Internal Review</option><option>Payment Issue</option><option>Other</option></select></div><div class="field"><label>Details</label><textarea id="blockNote" placeholder="Contoh: Missing Maybank statement March 2025"></textarea></div><button class="btn primary" id="confirmBlock">Confirm Waiting</button></div>`;$("#confirmBlock").onclick=async()=>{job.blockReason=`${$("#blockType").value}: ${$("#blockNote").value.trim()}`;job.blockedAt=new Date().toISOString();job.status="blocked";job.movementHistory=job.movementHistory||[];job.movementHistory.push({from:job.stage,to:job.stage,by:job.stagePic||"Amir",at:new Date().toISOString(),note:"BLOCKED • "+job.blockReason});syncMirror(job);await persistMovement(job,"JOB_BLOCKED",{reason:job.blockReason});renderDash();openWorkflow(job.id)}}
+async function resumeJob(job){const started=job.blockedAt?new Date(job.blockedAt):null,mins=started?Math.max(0,Math.round((Date.now()-started)/60000)):0;job.totalBlockedMinutes=(job.totalBlockedMinutes||0)+mins;job.blockReason="";job.blockedAt=null;job.status="active";job.movementHistory=job.movementHistory||[];job.movementHistory.push({from:job.stage,to:job.stage,by:job.stagePic||"Amir",at:new Date().toISOString(),note:`RESUMED • blocked ${mins} min`});syncMirror(job);await persistMovement(job,"JOB_RESUMED",{blockedMinutes:mins});renderDash();openWorkflow(job.id)}
+function showHandoffForm(job,next){$("#wfActionArea").innerHTML=`<div class="card" style="margin-top:12px"><h2>Stage Handoff</h2><div class="handoffGrid"><div class="field"><label>Next Stage</label><input value="${stageLabel(next)}" disabled></div><div class="field"><label>Assign Stage PIC</label><select id="handoffPic"><option>Amir</option><option>Syiqa</option><option>Zatty</option><option>Ain</option><option>Team ACC</option><option>Team Sales</option></select></div><div class="field"><label>Stage Due</label><input id="handoffDue" type="date"></div><div class="field"><label>Note</label><input id="handoffNote" placeholder="Optional"></div></div><div style="height:10px"></div><button class="btn primary" id="confirmHandoff">Confirm Handoff</button></div>`;$("#confirmHandoff").onclick=async()=>{const from=job.stage,pic=$("#handoffPic").value,due=$("#handoffDue").value,note=$("#handoffNote").value.trim();if(!due)return alert("Set Stage Due dahulu.");job.stage=next;job.stagePic=pic;job.pic=pic;job.stageDue=due;job.stageStartedAt=new Date().toISOString();job.status="active";job.movementHistory=job.movementHistory||[];job.movementHistory.push({from,to:next,by:pic,at:new Date().toISOString(),note});syncMirror(job);await persistMovement(job,"STAGE_HANDOFF",{from,to:next,pic,due,note});refreshOperationalSelectors();renderDash();openWorkflow(job.id)}}
+async function closeJob(job){job.status="closed";job.completedAt=new Date().toISOString();job.movementHistory=job.movementHistory||[];job.movementHistory.push({from:job.stage,to:job.stage,by:job.stagePic||"Amir",at:new Date().toISOString(),note:"JOB CLOSED"});syncMirror(job);await persistMovement(job,"JOB_CLOSED");renderDash();openWorkflow(job.id)}
+window.openWorkflow=openWorkflow;
 
 function renderAccSelector(){
  const q=($("#accCompanySearch")?.value||"").toLowerCase();
@@ -451,9 +486,9 @@ try{
    }
    if(window.jobs){
      window.jobs.splice(0,window.jobs.length,...jobs.map(j=>({
-       company:companies.find(c=>c.id===j.companyId)?.name||j.companyId,
-       stage:j.stage||"sorting",pic:j.pic||"-",
-       entered:String(j.createdAt||"").slice(0,10),
+       id:j.id,company:companies.find(c=>c.id===j.companyId)?.name||j.companyId,service:j.service||"Other Services",
+       stage:j.stage||"sorting",pic:j.stagePic||j.pic||"-",
+       entered:String(j.stageStartedAt||j.createdAt||"").slice(0,10),
        due:j.stageDue||j.overallDue||"9999-12-31",
        completed:j.completedAt||null,block:j.block||"",payment:j.paymentStatus||"Unpaid"
      })));
