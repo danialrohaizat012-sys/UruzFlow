@@ -57,7 +57,7 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 @media(max-width:1200px){.stageStrip{grid-template-columns:repeat(3,1fr)}.layout,.two,.three{grid-template-columns:1fr}}
 @media(max-width:960px){.shell{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:14px 9px}.brand img{width:62px;height:62px;object-fit:cover;object-position:50% 25%}.profile,.nav .label{display:none}.nav button{text-align:center;font-size:19px}.nav span:first-child{width:auto}.header{flex-direction:column}.stageStrip{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){body{padding-bottom:70px}.shell{display:block}.sidebar{display:none}main{padding:16px 13px 25px}.header h1{font-size:27px}.controls{display:grid;grid-template-columns:1fr 1fr;width:100%}.stageStrip{display:flex;overflow:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-right:-13px}.stageCard{min-width:82vw;scroll-snap-align:start}.kpiGrid{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.span2{grid-column:auto}.mobileNav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(6,21,34,.96);border-top:1px solid var(--line);padding:7px}.mobileNav button{border:0;background:transparent;color:#adc0cd;padding:6px 2px;font-size:9px}.mobileNav button b{display:block;font-size:17px;color:#fff}.accountCard,.yearCol{min-width:88vw}.invoicePaper{padding:14px}.invoiceTop{grid-template-columns:90px 1fr}.invoiceTop img{width:80px}}
-@media print{body{background:#fff}.sidebar,.mobileNav,#splash,.header,.actions,.tabs,.notice{display:none!important}.shell{display:block}.view{display:none!important}#billing.view.active{display:block!important}main{padding:0}.invoicePaper{box-shadow:none;border-radius:0;max-width:none}.card{border:0;box-shadow:none;padding:0;background:#fff}.builderPane{display:none!important}}
+@media print{body:not(.printingReport){background:#fff}body:not(.printingReport) .sidebar,body:not(.printingReport) .mobileNav,body:not(.printingReport) #splash,body:not(.printingReport) .header,body:not(.printingReport) .actions,body:not(.printingReport) .tabs,body:not(.printingReport) .notice{display:none!important}body:not(.printingReport) .shell{display:block}body:not(.printingReport) .view{display:none!important}body:not(.printingReport) #billing.view.active{display:block!important}body:not(.printingReport) main{padding:0}body:not(.printingReport) .invoicePaper{box-shadow:none;border-radius:0;max-width:none}body:not(.printingReport) .card{border:0;box-shadow:none;padding:0;background:#fff}body:not(.printingReport) .builderPane{display:none!important}}
 
 .companyBar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px}
 .historyBox{margin-bottom:14px}.historyItem{display:flex;justify-content:space-between;gap:10px;padding:11px;border-bottom:1px solid #1c394d}
@@ -84,6 +84,55 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 .workflowModal{position:fixed;inset:0;z-index:500;background:rgba(2,10,17,.76);display:none;place-items:center;padding:18px}.workflowModal.show{display:grid}.workflowCard{width:min(720px,100%);max-height:90vh;overflow:auto;background:#0b2030;border:1px solid #355269;border-radius:16px;padding:20px;box-shadow:0 30px 90px rgba(0,0,0,.45)}
 .flowTrack{display:flex;gap:7px;overflow:auto;padding:10px 0 16px}.flowNode{min-width:105px;padding:9px;border:1px solid #29465a;border-radius:9px;color:#8fa5b4;font-size:10px}.flowNode.current{border-color:#4b91e2;color:#fff;background:#12324a}.flowNode.done{border-color:#48ba70;color:#7fe39c}.jobActions{display:flex;gap:8px;flex-wrap:wrap}.jobLink{cursor:pointer;color:#7bb7ff;text-decoration:underline}.blockPanel{padding:12px;border:1px solid #59441f;background:#302512;border-radius:10px;margin:10px 0}.handoffGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.timeline{display:grid;gap:7px}.timelineItem{padding:9px 11px;border-left:2px solid #355269;background:#081b29;border-radius:0 8px 8px 0;font-size:11px}
 @media(max-width:640px){.handoffGrid{grid-template-columns:1fr}}
+
+.draftStatus{font-size:11px;color:#9fb1be;margin-left:4px;align-self:center}
+.draftStatus.saved{color:#7fe39c}.draftStatus.local{color:#f0c36a}
+
+/* V17.4 UI collision fixes */
+.header{gap:14px;align-items:flex-start}.header>div:first-child{min-width:0}
+.header .actions{justify-content:flex-end;max-width:100%}
+.header .actions .draftStatus{flex-basis:100%;text-align:right;margin:0}
+.btn{white-space:nowrap}
+.companyBar .field{min-width:0}.companyBar input,.companyBar select{width:100%;min-width:0}
+#printReport{display:none}
+.printSheet{font-family:Arial,sans-serif;color:#111;background:#fff;padding:26px}
+.printBrand{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:18px}
+.printBrand img{height:52px;max-width:180px;object-fit:contain}
+.printTitle{font-size:22px;font-weight:800}.printMeta{font-size:11px;line-height:1.55;color:#444;text-align:right}
+.printSection{margin-top:18px}.printSection h3{font-size:13px;margin:0 0 8px}
+.printTable{width:100%;border-collapse:collapse;font-size:10px}
+.printTable th,.printTable td{border:1px solid #bbb;padding:6px;text-align:right}
+.printTable th:first-child,.printTable td:first-child{text-align:left}
+.printFooter{margin-top:18px;font-size:9px;color:#666;text-align:right}
+@media(max-width:900px){
+ .header{display:block}.header .actions{justify-content:flex-start;margin-top:12px}
+ .header .actions .draftStatus{text-align:left}
+ .actions .btn{flex:1 1 calc(50% - 9px)}
+}
+@media(max-width:520px){
+ main{padding-left:12px;padding-right:12px}
+ .header h1{font-size:22px}
+ .actions{gap:7px}.actions .btn{flex:1 1 100%;width:100%}
+ .companyBar{gap:8px}
+ .card{padding:12px}
+ .tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
+ .tabs button{flex:0 0 auto}
+ .modal{width:calc(100vw - 20px);max-height:88vh;overflow:auto}
+}
+@media print{
+ body.printingReport *{visibility:hidden!important}
+ body.printingReport #printReport,body.printingReport #printReport *{visibility:visible!important}
+ body.printingReport #printReport{display:block!important;position:absolute;left:0;top:0;width:100%;background:#fff}
+ @page{size:A4;margin:10mm}
+}
+
+/* V17.5 performance */
+.view:not(.active){display:none!important}
+.card,.invoicePaper,.modal{contain:layout paint}
+.scroll{contain:content}
+@media (prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 </style>
 </head>
 <body>
@@ -155,19 +204,19 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 </section>
 
 <section id="bank" class="view">
- <div class="header"><div><h1>Bank Summary</h1><p>Kerja disimpan sebagai draft mengikut Job ID. Complete hanya bila Bank Summary betul-betul siap.</p></div><div class="actions"><button class="btn primary" id="addBank">+ Add Bank Account</button><button class="btn success" id="saveBankDraft">Save Draft</button><button class="btn primary" id="completeBank">Complete & Send →</button><button class="btn" onclick="window.print()">Print / PDF</button></div></div>
+ <div class="header"><div><h1>Bank Summary</h1><p>Draft disimpan terus ke Firestore mengikut Job ID. Complete hanya bila Bank Summary betul-betul siap.</p></div><div class="actions"><button class="btn primary" id="addBank">+ Add Bank Account</button><button class="btn success" id="saveBankDraft">Save Draft</button><button class="btn" id="exportBankPdf">Export PDF</button><button class="btn primary" id="completeBank">Complete & Send →</button><span id="bankDraftStatus" class="draftStatus">Firestore draft</span></div></div>
  <div class="companyBar"><div class="field"><label>Search Company</label><input id="bankCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Company</label><select id="bankCompanySelect" class="input"></select></div><div class="field"><label>Operational Job</label><select id="bankJobSelect" class="input"></select></div><button id="bankHistoryBtn" class="btn">History</button></div><div id="bankHistory" class="card historyBox" style="display:none"></div><div class="notice">Formula berdasarkan contoh Uruz: Balance bulanan = CR − DR. Running Balance = balance sebelumnya + balance bulanan. Rekod Bank Summary diikat kepada company yang dipilih.</div>
  <div class="tabs" id="bankTabs"></div><div id="bankWorkspace"></div>
 </section>
 
 <section id="tax" class="view">
- <div class="header"><div><h1>Kiraan Cukai</h1><p>Draft dan final record disimpan mengikut Job ID supaya tahun/company tidak bercampur.</p></div><div class="actions"><button class="btn primary" id="addYear">+ Add Year</button><button class="btn" id="addTaxpayer">+ Add Taxpayer</button><button class="btn success" id="saveTaxDraft">Save Draft</button><button class="btn primary" id="completeTax">Complete & Send →</button></div></div>
+ <div class="header"><div><h1>Kiraan Cukai</h1><p>Draft disimpan terus ke Firestore mengikut Job ID supaya tahun/company tidak bercampur.</p></div><div class="actions"><button class="btn primary" id="addYear">+ Add Year</button><button class="btn" id="addTaxpayer">+ Add Taxpayer</button><button class="btn success" id="saveTaxDraft">Save Draft</button><button class="btn" id="exportTaxPdf">Export PDF</button><button class="btn primary" id="completeTax">Complete & Send →</button><span id="taxDraftStatus" class="draftStatus">Firestore draft</span></div></div>
  <div class="companyBar"><div class="field"><label>Search Company</label><input id="taxCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Company</label><select id="taxCompanySelect" class="input"></select></div><div class="field"><label>Operational Job</label><select id="taxJobSelect" class="input"></select></div><button id="taxHistoryBtn" class="btn">History</button></div><div id="taxHistory" class="card historyBox" style="display:none"></div><div class="notice">Flow kiraan: Untung Bersih Seperti Akaun → Add-back → Jumlah Pendapatan → Tolak Pelepasan → Pendapatan Kena Cukai → Tax Bracket → Rebate/Zakat → Cukai Kena Bayar. Rekod Kiraan Cukai diikat kepada company yang dipilih.</div>
  <div class="yearGrid" id="taxWorkspace"></div>
 </section>
 
 <section id="billing" class="view">
- <div class="header"><div><h1>Quotation & Invoice</h1><p>Dropdown item berulang, tarikh/period berasingan, dan auto service coding Uruz.</p></div><div class="actions"><button class="btn" onclick="window.print()">Print / Export PDF</button></div></div>
+ <div class="header"><div><h1>Quotation & Invoice</h1><p>Dropdown item berulang, tarikh/period berasingan, dan auto service coding Uruz.</p></div><div class="actions"><button class="btn" id="exportBillingPdf">Export PDF</button></div></div>
  <div class="two">
   <div class="card builderPane">
    <h2>Document Builder</h2><div style="height:12px"></div>
@@ -214,7 +263,13 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 <div id="workflowModal" class="workflowModal"><div class="workflowCard"><div class="cardHead"><div><h2 id="wfTitle">Job Movement</h2><div id="wfSub" class="muted"></div></div><button class="btn" id="wfClose">Close</button></div><div id="wfTrack" class="flowTrack"></div><div id="wfBody"></div></div></div>
 <script>
 const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
-function show(id){$$(".view").forEach(v=>v.classList.remove("active"));$("#"+id).classList.add("active");$$("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
+function show(id){
+ document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));
+ document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===id));
+ if(id==="bank"){refreshModuleJobs("bank");loadBankDraft()}
+ if(id==="tax"){refreshModuleJobs("tax");loadTaxDraft()}
+ if(id==="acc"){renderAccSelector()}
+}
 $$("[data-view]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
 
 const STAGES=[
@@ -274,37 +329,46 @@ function renderCompanyHistory(type){
 }
 
 
+
+
+const uruzCache={
+ bank:new Map(),tax:new Map(),loaded:{companies:false,jobs:false},
+ invalidate(type,id){if(this[type])this[type].delete(id)}
+};
+let moduleLoadToken={bank:0,tax:0};
+function setDraftStatus(type,text,cls=""){
+ const el=$("#"+type+"DraftStatus");if(el){el.textContent=text;el.className="draftStatus "+cls}
+}
+
 window.loadBankDraft=async function loadBankDraft(){
- const job=selectedModuleJob("bank");
- bankAccounts.splice(0,bankAccounts.length); activeBank=0;
+ const job=selectedModuleJob("bank"),token=++moduleLoadToken.bank;
+ bankAccounts.splice(0,bankAccounts.length);activeBank=0;
  if(!job){renderBankTabs();renderBank();return}
- const F=window.URUZ_FIREBASE;
- if(F?.db){
-   try{
-     const snap=await F.getDoc(F.doc(F.db,"bankSummaries",job.id));
-     if(snap.exists()){
-       const d=snap.data();
-       (d.accounts||[]).forEach(a=>bankAccounts.push(a));
-     }
-   }catch(e){console.error("Bank draft load failed",e)}
+ let data=uruzCache.bank.get(job.id);
+ if(!data){
+   setDraftStatus("bank","Loading…");
+   const F=window.URUZ_FIREBASE;
+   if(F?.db){try{const snap=await F.getDoc(F.doc(F.db,"bankSummaries",job.id));if(token!==moduleLoadToken.bank)return;if(snap.exists())data=snap.data()}catch(e){console.error(e)}}
+   data=data||{accounts:[]};uruzCache.bank.set(job.id,data);
  }
- window.bankAccounts=bankAccounts; renderBankTabs();renderBank();
+ (data.accounts||[]).forEach(a=>bankAccounts.push(structuredClone(a)));
+ window.bankAccounts=bankAccounts;renderBankTabs();renderBank();
+ setDraftStatus("bank",bankAccounts.length?"Loaded ✓":"No saved draft","saved");
 }
 window.loadTaxDraft=async function loadTaxDraft(){
- const job=selectedModuleJob("tax");
+ const job=selectedModuleJob("tax"),token=++moduleLoadToken.tax;
  taxCols.splice(0,taxCols.length);
  if(!job){window.taxCols=taxCols;renderTax();return}
- const F=window.URUZ_FIREBASE;
- if(F?.db){
-   try{
-     const snap=await F.getDoc(F.doc(F.db,"taxComputations",job.id));
-     if(snap.exists()){
-       const d=snap.data();
-       (d.columns||[]).forEach(c=>taxCols.push(c));
-     }
-   }catch(e){console.error("Tax draft load failed",e)}
+ let data=uruzCache.tax.get(job.id);
+ if(!data){
+   setDraftStatus("tax","Loading…");
+   const F=window.URUZ_FIREBASE;
+   if(F?.db){try{const snap=await F.getDoc(F.doc(F.db,"taxComputations",job.id));if(token!==moduleLoadToken.tax)return;if(snap.exists())data=snap.data()}catch(e){console.error(e)}}
+   data=data||{columns:[]};uruzCache.tax.set(job.id,data);
  }
+ (data.columns||[]).forEach(c=>taxCols.push(structuredClone(c)));
  window.taxCols=taxCols;renderTax();
+ setDraftStatus("tax",taxCols.length?"Loaded ✓":"No saved draft","saved");
 }
 
 let bankAccounts=[];
@@ -379,7 +443,7 @@ function renderCRM(){
  $("#crmEmpty").style.display=list.length?"none":"block";
  $("#companyCount").textContent=appState.companies.length;$("#jobCount").textContent=appState.jobs.length;$("#docCount").textContent=appState.documents.length;
 }
-$("#crmSearch").oninput=renderCRM;$("#crmPicFilter").onchange=renderCRM;
+$("#crmSearch").oninput=debounce(renderCRM,120);$("#crmPicFilter").onchange=renderCRM;
 $("#crmAddCompany").onclick=()=>show("intake");
 
 function refreshOperationalSelectors(){
@@ -392,7 +456,7 @@ function refreshOperationalSelectors(){
  });
  refreshModuleJobs("bank");
  refreshModuleJobs("tax");
- renderAccSelector();
+ if($("#acc")?.classList.contains("active"))renderAccSelector();
 }
 function refreshModuleJobs(type){
  const company=$("#"+type+"CompanySelect")?.value||"";
@@ -487,7 +551,7 @@ function renderAccJob(){
  $("#accFileCompany").textContent=c.name;
  $("#accFiles").innerHTML=docs.length?docs.map(d=>`<div class="docRow"><div><b>${d.name}</b><div class="muted">${d.period||""} • ${d.completedAt||""}</div></div><button class="btn">View</button></div>`).join(""):'<div class="emptyState"><b>Belum ada fail siap</b>Completed documents untuk company ini akan muncul di sini.</div>';
 }
-$("#accCompanySearch").oninput=renderAccSelector;$("#accJobSelect").onchange=renderAccJob;
+$("#accCompanySearch").oninput=debounce(renderAccSelector,120);$("#accJobSelect").onchange=renderAccJob;
 renderCRM();refreshOperationalSelectors();
 
 fillCompany("bank");fillCompany("tax");
@@ -500,9 +564,10 @@ async function saveBankDraft(showMessage=true){
  }
  const c=appState.companies.find(x=>x.id===job.companyId),F=window.URUZ_FIREBASE;
  if(!F?.db)return alert("Firebase belum connected.");
- const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",accounts:bankAccounts,updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
- await F.setDoc(F.doc(F.db,"bankSummaries",job.id),rec,{merge:true});
- if(showMessage)alert("Bank Summary draft saved ✓");
+ const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",accounts:bankAccounts,clientUpdatedAt:new Date().toISOString(),updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
+ await F.setDoc(F.doc(F.db,"bankSummaries",job.id),rec,{merge:true});uruzCache.bank.set(job.id,{...rec,accounts:structuredClone(bankAccounts)});
+ const st=$("#bankDraftStatus");if(st){st.textContent="Saved to Firestore ✓";st.className="draftStatus saved"}
+ if(showMessage)alert("Bank Summary saved to Firestore ✓");
  return true;
 }
 async function saveTaxDraft(showMessage=true){
@@ -513,9 +578,10 @@ async function saveTaxDraft(showMessage=true){
  }
  const c=appState.companies.find(x=>x.id===job.companyId),F=window.URUZ_FIREBASE;
  if(!F?.db)return alert("Firebase belum connected.");
- const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",columns:taxCols,updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
- await F.setDoc(F.doc(F.db,"taxComputations",job.id),rec,{merge:true});
- if(showMessage)alert("Kiraan Cukai draft saved ✓");
+ const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",columns:taxCols,clientUpdatedAt:new Date().toISOString(),updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
+ await F.setDoc(F.doc(F.db,"taxComputations",job.id),rec,{merge:true});uruzCache.tax.set(job.id,{...rec,columns:structuredClone(taxCols)});
+ const st=$("#taxDraftStatus");if(st){st.textContent="Saved to Firestore ✓";st.className="draftStatus saved"}
+ if(showMessage)alert("Kiraan Cukai saved to Firestore ✓");
  return true;
 }
 async function completeModule(type){
@@ -536,16 +602,66 @@ async function completeModule(type){
 }
 window.saveBankDraft=saveBankDraft;
 window.saveTaxDraft=saveTaxDraft;
+
+
 $("#saveBankDraft").onclick=()=>saveBankDraft(true);
 $("#saveTaxDraft").onclick=()=>saveTaxDraft(true);
 $("#completeBank").onclick=()=>completeModule("bank");
 $("#completeTax").onclick=()=>completeModule("tax");
 
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function printReport(html){
+ const host=$("#printReport");host.innerHTML=`<div class="printSheet">${html}<div class="printFooter">Generated from Uruz Flow • ${new Date().toLocaleString("en-MY")}</div></div>`;
+ document.body.classList.add("printingReport");
+ const cleanup=()=>{document.body.classList.remove("printingReport");host.innerHTML="";window.removeEventListener("afterprint",cleanup)};
+ window.addEventListener("afterprint",cleanup);
+ setTimeout(()=>window.print(),80);
+}
+function reportHeader(title,job,company){
+ return `<div class="printBrand"><div><img src="uruz-logo.png" alt="Uruz"><div class="printTitle">${esc(title)}</div></div><div class="printMeta"><b>${esc(company?.name||"")}</b><br>Job: ${esc(job?.id||"-")}<br>Period: ${esc(job?.period||"-")}<br>PIC: ${esc(company?.pic||"-")}</div></div>`;
+}
+$("#exportBankPdf").onclick=()=>{
+ const job=selectedModuleJob("bank");if(!job)return alert("Pilih Operational Job dahulu.");
+ const company=appState.companies.find(c=>c.id===job.companyId);
+ if(!bankAccounts.length)return alert("Belum ada Bank Summary untuk diexport.");
+ let body=reportHeader("Bank Summary",job,company);
+ bankAccounts.forEach(a=>{
+   let run=Number(a.opening||0),td=0,tc=0;
+   const rows=(a.months||[]).map((m,i)=>{const dr=Number(m.dr||0),cr=Number(m.cr||0),bal=cr-dr;run+=bal;td+=dr;tc+=cr;return `<tr><td>${months[i]}</td><td>${money(dr)}</td><td>${money(cr)}</td><td>${money(bal)}</td><td>${money(run)}</td></tr>`}).join("");
+   body+=`<div class="printSection"><h3>${esc(a.name||"Bank Account")} ${a.account?`• ${esc(a.account)}`:""} • Opening ${money(a.opening||0)}</h3><table class="printTable"><thead><tr><th>Month</th><th>DR</th><th>CR</th><th>Balance</th><th>Running</th></tr></thead><tbody>${rows}<tr><th>Total</th><th>${money(td)}</th><th>${money(tc)}</th><th>${money(tc-td)}</th><th>${money(run)}</th></tr></tbody></table></div>`;
+ });
+ printReport(body);
+};
+$("#exportTaxPdf").onclick=()=>{
+ const job=selectedModuleJob("tax");if(!job)return alert("Pilih Operational Job dahulu.");
+ const company=appState.companies.find(c=>c.id===job.companyId);
+ if(!taxCols.length)return alert("Belum ada Kiraan Cukai untuk diexport.");
+ let body=reportHeader("Kiraan Cukai",job,company);
+ taxCols.forEach(t=>{
+   const add=Number(t.depr||0)+Number(t.manager||0)+Number(t.self||0)+Number(t.internet||0);
+   const income=Number(t.netProfit||0)+add;
+   const relief=Number(t.child18||0)+Number(t.life||0)+Number(t.otherRelief||0);
+   const taxable=Math.max(0,income-relief);
+   const tax=Math.max(0,Number(t.baseTax||0)+Math.max(0,taxable-Number(t.baseFirst||0))*Number(t.nextRate||0)/100-Number(t.rebate||0)-Number(t.zakat||0));
+   const rows=[
+    ["Untung Bersih Seperti Akaun",t.netProfit],["Add-back: Depreciation",t.depr],["Add-back: Manager",t.manager],["Add-back: Self",t.self],["Add-back: Internet",t.internet],
+    ["Jumlah Pendapatan",income],["Jumlah Pelepasan",relief],["Pendapatan Kena Cukai",taxable],["Rebate",t.rebate],["Zakat",t.zakat],["Cukai Kena Bayar",tax]
+   ].map(x=>`<tr><td>${esc(x[0])}</td><td>${money(Number(x[1]||0))}</td></tr>`).join("");
+   body+=`<div class="printSection"><h3>${esc(t.taxpayer||"Taxpayer")} • YA ${esc(t.year||job.period||"-")}</h3><table class="printTable"><thead><tr><th>Item</th><th>RM</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+ });
+ printReport(body);
+};
+$("#exportBillingPdf").onclick=()=>{document.body.classList.remove("printingReport");window.print()};
+
+
+function debounce(fn,wait=120){let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),wait)}}
+
 $("#bankCompanySearch").oninput=()=>fillCompany("bank");$("#taxCompanySearch").oninput=()=>fillCompany("tax");
 $("#bankCompanySelect").onchange=e=>{currentBankCompany=e.target.value;refreshModuleJobs("bank");loadBankDraft();if($("#bankHistory").style.display!=="none")renderCompanyHistory("bank")};
 $("#taxCompanySelect").onchange=e=>{currentTaxCompany=e.target.value;refreshModuleJobs("tax");loadTaxDraft();if($("#taxHistory").style.display!=="none")renderCompanyHistory("tax")};
-$("#bankJobSelect").onchange=()=>loadBankDraft();
-$("#taxJobSelect").onchange=()=>loadTaxDraft();
+$("#bankJobSelect").onchange=()=>{loadBankDraft()};
+$("#taxJobSelect").onchange=()=>{loadTaxDraft()};
 $("#bankHistoryBtn").onclick=()=>{let b=$("#bankHistory");b.style.display=b.style.display==="none"?"block":"none";if(b.style.display==="block")renderCompanyHistory("bank")};
 $("#taxHistoryBtn").onclick=()=>{let b=$("#taxHistory");b.style.display=b.style.display==="none"?"block":"none";if(b.style.display==="block")renderCompanyHistory("tax")};
 renderDash();renderBankTabs();renderBank();renderTax();setTimeout(()=>$("#splash").classList.add("hide"),3000);
@@ -580,9 +696,6 @@ try{
    syncState("Firestore: synced","ok");
    return data;
  };
- window.saveLocalDraft=(key,data)=>localStorage.setItem("uruz-draft-"+key,JSON.stringify(data));
- window.loadLocalDraft=key=>{try{return JSON.parse(localStorage.getItem("uruz-draft-"+key)||"null")}catch{return null}};
- window.clearLocalDraft=key=>localStorage.removeItem("uruz-draft-"+key);
 
  const loadCore=async()=>{
    syncState("Firestore: loading core data…","busy");
@@ -603,7 +716,7 @@ try{
    window.renderCRM?.();
    window.refreshOperationalSelectors?.();
    window.renderDash?.();
-   setTimeout(()=>{window.loadBankDraft?.();window.loadTaxDraft?.()},0);
+   /* Bank/Tax drafts are loaded only when the user opens/selects that module. */
    syncState(`Firestore: synced • ${companies.length} companies • ${jobs.length} jobs`,"ok");
  };
 
@@ -641,5 +754,5 @@ try{
 }
 </script>
 
-</body>
+<div id="printReport"></div></body>
 </html>
