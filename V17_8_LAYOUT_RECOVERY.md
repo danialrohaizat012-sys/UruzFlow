@@ -1,0 +1,1 @@
+Confirmed root cause: V17.7 accidentally removed the opening <main> tag while leaving </main>, causing the operational canvas to disappear. V17.8 restores the main wrapper and keeps logout inside the sidebar profile card with no floating overlay.

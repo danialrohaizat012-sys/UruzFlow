@@ -198,6 +198,14 @@ main{position:relative}
  .sidebarLogout{display:none!important}
  .navLogout{display:inline-flex!important;position:static!important;z-index:auto!important;width:auto!important;flex:0 0 auto!important}
 }
+
+/* V17.8 layout recovery */
+.shell{display:grid!important;grid-template-columns:220px minmax(0,1fr)!important;min-height:100vh}
+.sidebar{grid-column:1!important}
+#appMain{grid-column:2!important;min-width:0!important;width:100%!important;display:block!important;overflow-x:hidden}
+#authUser,#mobileAccountBar{display:none!important}
+.sidebarInlineLogout{display:block;width:100%;margin-top:8px;padding:7px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:inherit;font:inherit;cursor:pointer;position:static!important}
+@media(max-width:900px){.shell{display:block!important}#appMain{width:100%!important}.sidebarInlineLogout{display:none}}
 </style>
 </head>
 <body>
@@ -218,7 +226,7 @@ main{position:relative}
 <div class="shell">
 <aside class="sidebar">
  <div class="brand"><img src="uruz-logo.png" alt="Uruz Consultancy"/></div>
- <div class="profile"><small>FULL ACCESS</small><b>Encik Amir • HOD</b></div>
+ <div class="profile"><small>FULL ACCESS</small><b>Encik Amir • HOD</b><button id="sidebarLogoutBtn" class="sidebarInlineLogout" type="button">Log Out</button></div>
  <div class="nav">
   <button class="active" data-view="dashboard"><span>⌂</span><span class="label">Flow Dashboard</span></button>
   <button data-view="intake"><span>＋</span><span class="label">Doc Intake & Sorting</span></button>
@@ -230,6 +238,8 @@ main{position:relative}
   <button data-view="audit"><span>⌕</span><span class="label">Audit Trail</span></button>
  </div>
 </aside>
+<main id="appMain">
+
 
 
  <div class="searchWrap"><input id="search" class="input" placeholder="Cari company..."/><button class="btn" id="clearSearch">Clear</button></div>
@@ -735,10 +745,7 @@ const mobileLogoutBtn=document.querySelector("#mobileLogoutBtn");
 if(mobileLogoutBtn) mobileLogoutBtn.addEventListener("click",()=>document.querySelector("#logoutBtn")?.click());
 
 
-["sidebarLogoutBtn","navLogoutBtn"].forEach(id=>{
- const b=document.getElementById(id);
- if(b)b.addEventListener("click",()=>document.getElementById("logoutBtn")?.click());
-});
+document.addEventListener("DOMContentLoaded",()=>document.getElementById("sidebarLogoutBtn")?.addEventListener("click",()=>document.getElementById("logoutBtn")?.click()));
 </script>
 
 <script type="module">
@@ -828,5 +835,4 @@ try{
 </script>
 
 <div id="printReport"></div></body>
-</html<button id="sidebarLogoutBtn" class="btn sidebarLogout" type="button">Log Out</button>
->
+</html>
