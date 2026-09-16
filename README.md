@@ -21,3 +21,16 @@ This remains a frontend prototype. Production backend, authentication, permissio
 
 
 V10: Company selector/search + Bank Summary History + Tax History.
+
+
+## V14 architecture cleanup
+- Demo/random operational data removed. System starts empty.
+- CRM is Company Master and supports search by company name or Company PIC.
+- Company PIC and Job/Stage PIC are separate concepts.
+- Operational jobs must be created through Doc Intake & Sorting.
+- Existing CRM company may later have multiple jobs.
+- ACC Preparation selects an operational job/company and shows completed files on the right.
+- Data model direction: Company -> Jobs -> Workflow -> Bank/Tax/Billing/Payments -> ACC -> Documents -> Dispatch -> Audit.
+- Overall due date and stage due date are captured separately.
+- Financial year/period captured at job intake.
+- Production next step: load all appState collections from Firestore on login and persist every module, not only Intake.

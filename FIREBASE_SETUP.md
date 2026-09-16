@@ -1,16 +1,31 @@
-# URUZ Flow V13
-Firebase project: uruzflow
+# URUZ Flow V15 — Full Firestore Persistence
 
-Authentication:
-- Email/Password only.
-- Anonymous Authentication is NOT required.
-- Encik Amir UID is locked as the first Full Access account.
+Firebase project: `uruzflow`
+Auth: Email/Password
+Current authorized UID: Encik Amir only.
 
-Before use:
-1. Firebase Authentication > Sign-in method > enable Email/Password.
-2. Ensure Encik Amir exists under Authentication > Users with UID:
-   A5GLNpoxXnUi6U0gHuMET7Yucqi2
-3. Firestore Database > Rules: the included firestore.rules matches this UID.
-4. Deploy all files.
+Persistent Firestore collections:
+- companies
+- jobs
+- documents
+- payments
+- bankSummaries
+- taxComputations
+- billingDocuments
+- accPreparations
+- dispatches
+- auditLogs
 
-Do not place passwords inside source code. Encik Amir enters his Firebase Authentication email/password on the login screen.
+On successful login, URUZ Flow loads persisted collections from Firestore into the app state.
+Intake creates/persists Company + Job.
+Bank Summary, Tax, Billing and ACC Preparation save to Firestore.
+ACC completion creates completed-document records.
+Important actions create auditLogs.
+
+The included Firestore rules remain locked to Encik Amir's UID.
+
+Next production hardening:
+- staff role accounts and role-based Firestore rules
+- Firebase Storage for actual PDF/Excel/document binary files
+- transactions/counters for guaranteed invoice numbering
+- richer payment ledger UI and dispatch UI
