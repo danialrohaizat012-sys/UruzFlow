@@ -1,0 +1,1 @@
+Direct event refs absent from static DOM (expected dynamic/guarded): ['completeAcc', 'openingBal']

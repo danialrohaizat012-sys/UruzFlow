@@ -125,18 +125,17 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
  <div class="header"><div><h1>Doc Intake & Sorting</h1><p>Pintu masuk rasmi untuk semua operational job Uruz Flow.</p></div></div>
  <div class="intakeGrid">
   <div class="card">
-   <div class="cardHead"><div><h2>Create New Job</h2><div class="muted">Created by Admin • Syiqa</div></div></div>
+   <div class="cardHead"><div><h2>Create New Job</h2><div class="muted">Intake & Sorting • Syiqa</div></div></div>
    <div class="formgrid">
     <div class="field span2"><label>Search / Select Company</label><input id="intakeCompany" placeholder="Taip nama company..."></div>
-    <div class="field"><label>Company PIC</label><select id="intakeCompanyPic"><option value="">Select PIC</option><option>Amir</option><option>Syiqa</option><option>Zatty</option><option>Ain</option></select></div>
-    <div class="field"><label>Job PIC / Assigned PIC</label><select id="intakeJobPic"><option value="">Select PIC</option><option>Amir</option><option>Syiqa</option><option>Zatty</option><option>Ain</option><option>Team ACC</option><option>Team Sales</option></select></div>
+    <div class="field"><label>PIC Uruz</label><select id="intakeCompanyPic"><option value="">Select PIC</option><option>Amir</option><option>Syiqa</option><option>Zatty</option><option>Ain</option></select><div class="muted" style="margin-top:5px">PIC utama company. Syiqa automatik mengurus Intake & Sorting.</div></div>
     <div class="field"><label>Service / Job Type</label><select id="intakeService"><option>Account & Tax</option><option>Bookkeeping</option><option>HR Service</option><option>SSM Registration</option><option>Stamping</option><option>Form P</option><option>Other Services</option></select></div>
     <div class="field"><label>Financial Year / Period</label><input id="intakePeriod" placeholder="Contoh YA2025 / Jan-Dec 2026"></div>
     <div class="field"><label>Overall Due Date</label><input id="intakeDue" type="date"></div>
     <div class="field"><label>Stage Due Date</label><input id="intakeStageDue" type="date"></div>
     <div class="field span2"><label>Notes / Documents Received</label><textarea id="intakeNotes" placeholder="Catat dokumen yang diterima / dokumen yang masih pending..."></textarea></div>
    </div>
-   <div style="height:12px"></div><button class="btn primary" id="createJobBtn">Create Company + Job</button><div id="intakeMsg" class="muted" style="margin-top:8px"></div>
+   <div style="height:12px"></div><button class="btn primary" id="createJobBtn">Open Job</button><div id="intakeMsg" class="muted" style="margin-top:8px"></div>
   </div>
   <div class="card"><h2>Operational Rule</h2><div style="height:12px"></div>
    <div class="notice">Company boleh wujud dalam CRM lebih awal sebagai lead/customer. Tetapi Bank Summary, Tax, Billing, ACC Preparation dan Dispatch hanya memaparkan <b>job yang telah dibuka melalui Intake</b>.</div>
@@ -146,7 +145,7 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
  </div>
 </section>
 <section id="crm" class="view">
- <div class="header"><div><h1>CRM / Company Master</h1><p>Company ialah identiti. Job ialah kerja. Search boleh guna nama company atau Company PIC.</p></div><div class="actions"><button class="btn primary" id="crmAddCompany">+ Add Company</button></div></div>
+ <div class="header"><div><h1>CRM / Company Master</h1><p>Company ialah identiti. PIC Uruz ialah PIC utama company. PIC department ditetapkan kemudian pada stage masing-masing.</p></div><div class="actions"><button class="btn primary" id="crmAddCompany">+ Add Company</button></div></div>
  <div class="searchWrap"><input id="crmSearch" class="input" placeholder="Cari company atau PIC, contoh: Zatty..."><select id="crmPicFilter" class="input" style="max-width:180px"><option value="">All PIC</option><option>Amir</option><option>Syiqa</option><option>Zatty</option><option>Ain</option></select></div>
  <div class="card"><div class="scroll"><table><thead><tr><th>Company</th><th>Company PIC</th><th>Contact</th><th>Phone</th><th>Email</th><th>Active Jobs</th></tr></thead><tbody id="crmRows"></tbody></table></div><div id="crmEmpty" class="emptyState"><b>Belum ada company dalam database</b>Company boleh ditambah melalui CRM sebagai lead/customer, tetapi operational job hanya wujud selepas Syiqa membuka job di Doc Intake & Sorting.</div></div>
 </section>
@@ -220,7 +219,7 @@ const STAGES=[
 {id:"closing",name:"Commercial Closing",caption:"Quotation, invoice & payment",accent:"#8c6bdd"},
 {id:"acc",name:"ACC Preparation",caption:"Akaun + Ledger",accent:"#e88f48"},
 {id:"dispatch",name:"Fulfilment & Dispatch",caption:"Hardcopy + postage",accent:"#48ba70"}];
-const jobs=[];
+const jobs=[]; window.jobs=jobs;
 let selectedStage="sorting";
 function d(s){return new Date(s+"T00:00:00")} function days(a,b){return Math.max(0,Math.floor((d(b)-d(a))/86400000))}
 function badge(s){const cls={Paid:"paid",Unpaid:"unpaid",Partial:"partial","On Track":"on","Pending Docs":"pending",Due:"due",Completed:"done"}[s]||"on";return `<span class="badge ${cls}">${s}</span>`}
@@ -257,10 +256,7 @@ function renderCompanyHistory(type){
  box.innerHTML=`<div class="cardHead"><div><h2>${type==="bank"?"Bank Summary":"Kiraan Cukai"} History</h2><div class="muted">${company}</div></div><button class="btn primary">+ New Record</button></div>${data.length?data.map(x=>`<div class="historyItem"><b>${x}</b><button class="btn">Open</button></div>`).join(""):'<div class="muted">Belum ada rekod untuk company ini.</div>'}`;
 }
 
-let bankAccounts=[
-{name:"Maybank 1",opening:6576.56,rows:[["Jan",219765.50,217792.92],["Feb",208450,210200],["Mar",225000,223900],["Apr",210400,214100],["May",230000,228500],["Jun",220000,221300],["Jul",231000,233100],["Aug",240000,238400],["Sep",219000,220500],["Oct",235000,234900],["Nov",240000,242000],["Dec",238616.42,230311.64]]},
-{name:"CIMB 2",opening:2450.00,rows:[["Jan",54000,55800],["Feb",60000,59800],["Mar",62000,63500],["Apr",58000,57500],["May",66000,67200],["Jun",64000,63900],["Jul",61000,61600],["Aug",59000,60100],["Sep",60000,60500],["Oct",63000,62500],["Nov",65000,65600],["Dec",62000,63000]]}
-];
+let bankAccounts=[];
 window.bankAccounts=bankAccounts;
 let activeBank=0;
 function renderBankTabs(){ if(!bankAccounts.length){$("#bankTabs").innerHTML="";return;} $("#bankTabs").innerHTML=bankAccounts.map((a,i)=>`<button class="tab ${i===activeBank?"active":""}" data-bi="${i}">${a.name}</button>`).join("");$$("[data-bi]").forEach(b=>b.onclick=()=>{activeBank=+b.dataset.bi;renderBankTabs();renderBank()})}
@@ -268,7 +264,7 @@ function renderBank(){if(!bankAccounts.length){$("#bankWorkspace").innerHTML='<d
 $("#bankWorkspace").innerHTML=`<div class="card"><div class="cardHead"><div><h2>${a.name}</h2><div class="muted">${currentBankCompany}</div></div><div class="field" style="width:180px"><label>Opening Balance</label><input id="openingBal" value="${a.opening.toFixed(2)}"/></div></div><div class="scroll"><table><thead><tr><th>Bulan</th><th>Withdrawal (DR)</th><th>Deposits (CR)</th><th>Balance (CR-DR)</th><th>Running Balance</th></tr></thead><tbody>${rows}</tbody></table></div><div class="kpiGrid" style="margin-top:12px"><div class="miniKpi"><b>RM${td.toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Total DR</span></div><div class="miniKpi"><b>RM${tc.toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Total CR</span></div><div class="miniKpi"><b>RM${(tc-td).toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Net Balance</span></div><div class="miniKpi"><b>RM${run.toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Closing Balance</span></div></div></div>`;
 $("#openingBal").onchange=e=>{a.opening=+e.target.value||0;renderBank()};$$(".bdr").forEach(x=>x.onchange=e=>{a.rows[+x.dataset.i][1]=+e.target.value||0;renderBank()});$$(".bcr").forEach(x=>x.onchange=e=>{a.rows[+x.dataset.i][2]=+e.target.value||0;renderBank()});
 }
-$("#addBank").onclick=()=>{if(!appState.jobs.length)return alert("Create operational job melalui Doc Intake & Sorting dahulu.");bankAccounts.push({name:"New Bank "+(bankAccounts.length+1),opening:0,rows:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map(m=>[m,0,0])});activeBank=bankAccounts.length-1;renderBankTabs();renderBank()};
+$("#addBank").onclick=()=>{if(!window.appState?.jobs?.length)return alert("Open operational job melalui Doc Intake & Sorting dahulu.");bankAccounts.push({name:"New Bank "+(bankAccounts.length+1),opening:0,rows:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map(m=>[m,0,0])});activeBank=bankAccounts.length-1;renderBankTabs();renderBank()};
 
 let taxCols=[];
 window.taxCols=taxCols;
@@ -321,9 +317,9 @@ $("#invoicePreview").innerHTML=`<div class="invoiceTop"><img src="uruz-logo.png"
 <div class="invoiceFoot"><p>Kindly prepare cash/cheque/transfer for:</p><p><b>URUZ CONSULTANCY (AMBANK BERHAD) - 8881061283930</b></p><p><b>Remark:</b><br>${$("#remark").value}</p><p>If any enquiry, kindly contact us at 09-701 3848 / 011-5928 9099 or email uruzconsultancy@uruzc.com</p><p>Thanks and regards.</p><p><b>URUZ CONSULTANCY</b></p></div>`}
 $("#serviceSelect").onchange=e=>{$("#desc").value=services[+e.target.value].desc;refreshInvoice()};["docType","billTo","clientInfo","period","rate","qty","paidAmt","desc","remark"].forEach(id=>$("#"+id).oninput=refreshInvoice);$("#refreshInvoice").onclick=refreshInvoice;$("#desc").value=services[0].desc;refreshInvoice();
 
-$("#completeAcc").onclick=()=>{if(!$("#accCheck").checked||!$("#ledgerCheck").checked){$("#accMsg").textContent="Akaun dan Ledger mesti kedua-duanya siap sebelum handoff.";return}$("#accMsg").textContent="ACC Preparation completed. Ready for Fulfilment & Dispatch (prototype)."}
+if($("#completeAcc")) $("#completeAcc").onclick=()=>{if(!$("#accCheck").checked||!$("#ledgerCheck").checked){$("#accMsg").textContent="Akaun dan Ledger mesti kedua-duanya siap sebelum handoff.";return}$("#accMsg").textContent="ACC Preparation completed. Ready for Fulfilment & Dispatch (prototype)."}
 
-const appState={companies:[],jobs:[],documents:[],payments:[]};
+const appState={companies:[],jobs:[],documents:[],payments:[]}; window.appState=appState;
 
 function renderCRM(){
  const q=($("#crmSearch")?.value||"").toLowerCase().trim(), pic=$("#crmPicFilter")?.value||"";
@@ -337,21 +333,54 @@ $("#crmAddCompany").onclick=()=>show("intake");
 
 function refreshOperationalSelectors(){
  const names=[...new Set(appState.jobs.map(j=>appState.companies.find(c=>c.id===j.companyId)?.name).filter(Boolean))];
- ["bankCompanySelect","taxCompanySelect"].forEach(id=>{let s=$("#"+id);if(s)s.innerHTML=names.map(n=>`<option>${n}</option>`).join("")});
+ ["bankCompanySelect","taxCompanySelect"].forEach(id=>{let s=$("#"+id);if(s)s.innerHTML=names.length?names.map(n=>`<option>${n}</option>`).join(""):`<option value="">No operational job yet</option>`});
  renderAccSelector();
 }
 $("#createJobBtn").onclick=async()=>{
- const name=$("#intakeCompany").value.trim(), companyPic=$("#intakeCompanyPic").value, jobPic=$("#intakeJobPic").value;
- if(!name||!companyPic||!jobPic){$("#intakeMsg").textContent="Company, Company PIC dan Job PIC diperlukan.";return}
- let company=appState.companies.find(c=>c.name.toLowerCase()===name.toLowerCase());
- if(!company){company={id:"CMP-"+Date.now(),name,pic:companyPic,contact:"",phone:"",email:""};appState.companies.push(company)}
- else company.pic=companyPic;
- const job={id:"JOB-"+Date.now(),companyId:company.id,service:$("#intakeService").value,period:$("#intakePeriod").value,pic:jobPic,overallDue:$("#intakeDue").value,stageDue:$("#intakeStageDue").value,stage:"sorting",notes:$("#intakeNotes").value,createdBy:"Syiqa",createdAt:new Date().toISOString()};
- appState.jobs.push(job);jobs.push({company:name,stage:"sorting",pic:jobPic,entered:(job.createdAt||"").slice(0,10),due:job.stageDue||job.overallDue||"9999-12-31",completed:null,block:"",payment:"Unpaid"});
- $("#intakeMsg").textContent=`${job.id} created. ${name} kini searchable dalam operational modules.`;
- $("#exportBackup")?.addEventListener("click",()=>{const blob=new Blob([JSON.stringify(appState,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="uruz-flow-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
-renderCRM();refreshOperationalSelectors();renderDash();
- if(window.URUZ_FIREBASE?.db){try{const F=window.URUZ_FIREBASE;await F.setDoc(F.doc(F.db,"companies",company.id),company,{merge:true});await F.setDoc(F.doc(F.db,"jobs",job.id),{...job,createdAt:F.serverTimestamp()},{merge:true})}catch(e){console.error(e)}}
+ const btn=$("#createJobBtn"),msg=$("#intakeMsg");
+ const name=$("#intakeCompany").value.trim();
+ const companyPic=$("#intakeCompanyPic").value;
+ if(!name||!companyPic){
+   msg.style.color="#ffb36b";
+   msg.textContent="Nama company dan PIC Uruz diperlukan.";
+   return;
+ }
+ btn.disabled=true;btn.textContent="Opening Job…";
+ try{
+   let company=appState.companies.find(c=>c.name.toLowerCase()===name.toLowerCase());
+   if(!company){
+     company={id:"CMP-"+Date.now(),name,pic:companyPic,contact:"",phone:"",email:"",createdAt:new Date().toISOString()};
+     appState.companies.push(company);
+   }else company.pic=companyPic;
+
+   const job={
+     id:"JOB-"+Date.now(),companyId:company.id,
+     service:$("#intakeService").value,period:$("#intakePeriod").value.trim(),
+     companyPic,pic:"Syiqa",stagePic:"Syiqa",stage:"sorting",
+     overallDue:$("#intakeDue").value,stageDue:$("#intakeStageDue").value,
+     notes:$("#intakeNotes").value.trim(),createdBy:"Syiqa",
+     createdAt:new Date().toISOString(),paymentStatus:"Unpaid"
+   };
+   appState.jobs.push(job);
+   jobs.push({company:name,stage:"sorting",pic:"Syiqa",entered:job.createdAt.slice(0,10),due:job.stageDue||job.overallDue||"9999-12-31",completed:null,block:"",payment:"Unpaid"});
+
+   renderCRM();refreshOperationalSelectors();renderDash();
+   msg.style.color="#7fe39c";
+   msg.textContent=`${job.id} opened • ${name} • PIC ${companyPic} • Intake Syiqa`;
+
+   if(window.URUZ_FIREBASE?.db){
+     const F=window.URUZ_FIREBASE;
+     await F.setDoc(F.doc(F.db,"companies",company.id),company,{merge:true});
+     await F.setDoc(F.doc(F.db,"jobs",job.id),job,{merge:true});
+     msg.textContent+=" • Firestore synced ✓";
+   }else msg.textContent+=" • Firebase belum connected.";
+ }catch(e){
+   console.error(e);
+   msg.style.color="#ff7777";
+   msg.textContent="Job dibina dalam session, tetapi Firestore sync gagal. Cuba refresh/login semula.";
+ }finally{
+   btn.disabled=false;btn.textContent="Open Job";
+ }
 };
 
 function renderAccSelector(){
@@ -417,8 +446,8 @@ try{
    syncState("Firestore: loading core data…","busy");
    const [companies,jobs]=await Promise.all([loadCollection("companies"),loadCollection("jobs")]);
    if(window.appState){
-     window.appState.companies=companies;
-     window.appState.jobs=jobs;
+     window.appState.companies.splice(0,window.appState.companies.length,...companies);
+     window.appState.jobs.splice(0,window.appState.jobs.length,...jobs);
    }
    if(window.jobs){
      window.jobs.splice(0,window.jobs.length,...jobs.map(j=>({
