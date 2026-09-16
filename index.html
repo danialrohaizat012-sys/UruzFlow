@@ -59,7 +59,7 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 @media(max-width:640px){body{padding-bottom:70px}.shell{display:block}.sidebar{display:none}main{padding:16px 13px 25px}.header h1{font-size:27px}.controls{display:grid;grid-template-columns:1fr 1fr;width:100%}.stageStrip{display:flex;overflow:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-right:-13px}.stageCard{min-width:82vw;scroll-snap-align:start}.kpiGrid{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.span2{grid-column:auto}.mobileNav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(6,21,34,.96);border-top:1px solid var(--line);padding:7px}.mobileNav button{border:0;background:transparent;color:#adc0cd;padding:6px 2px;font-size:9px}.mobileNav button b{display:block;font-size:17px;color:#fff}.accountCard,.yearCol{min-width:88vw}.invoicePaper{padding:14px}.invoiceTop{grid-template-columns:90px 1fr}.invoiceTop img{width:80px}}
 @media print{body{background:#fff}.sidebar,.mobileNav,#splash,.header,.actions,.tabs,.notice{display:none!important}.shell{display:block}.view{display:none!important}#billing.view.active{display:block!important}main{padding:0}.invoicePaper{box-shadow:none;border-radius:0;max-width:none}.card{border:0;box-shadow:none;padding:0;background:#fff}.builderPane{display:none!important}}
 
-.companyBar{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px}
+.companyBar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px}
 .historyBox{margin-bottom:14px}.historyItem{display:flex;justify-content:space-between;gap:10px;padding:11px;border-bottom:1px solid #1c394d}
 @media(max-width:640px){.companyBar{grid-template-columns:1fr}}
 
@@ -155,14 +155,14 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 </section>
 
 <section id="bank" class="view">
- <div class="header"><div><h1>Bank Summary</h1><p>Satu company boleh mempunyai beberapa bank account, setiap account ada summary Jan–Dis sendiri.</p></div><div class="actions"><button class="btn primary" id="addBank">+ Add Bank Account</button><button class="btn success" onclick="saveBankSummaryFirebase()">Save Firebase</button><button class="btn" onclick="window.print()">Print / PDF</button></div></div>
- <div class="companyBar"><div class="field"><label>Search Company</label><input id="bankCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Selected Company</label><select id="bankCompanySelect" class="input"></select></div><button id="bankHistoryBtn" class="btn">History</button></div><div id="bankHistory" class="card historyBox" style="display:none"></div><div class="notice">Formula berdasarkan contoh Uruz: Balance bulanan = CR − DR. Running Balance = balance sebelumnya + balance bulanan. Rekod Bank Summary diikat kepada company yang dipilih.</div>
+ <div class="header"><div><h1>Bank Summary</h1><p>Kerja disimpan sebagai draft mengikut Job ID. Complete hanya bila Bank Summary betul-betul siap.</p></div><div class="actions"><button class="btn primary" id="addBank">+ Add Bank Account</button><button class="btn success" id="saveBankDraft">Save Draft</button><button class="btn primary" id="completeBank">Complete & Send →</button><button class="btn" onclick="window.print()">Print / PDF</button></div></div>
+ <div class="companyBar"><div class="field"><label>Search Company</label><input id="bankCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Company</label><select id="bankCompanySelect" class="input"></select></div><div class="field"><label>Operational Job</label><select id="bankJobSelect" class="input"></select></div><button id="bankHistoryBtn" class="btn">History</button></div><div id="bankHistory" class="card historyBox" style="display:none"></div><div class="notice">Formula berdasarkan contoh Uruz: Balance bulanan = CR − DR. Running Balance = balance sebelumnya + balance bulanan. Rekod Bank Summary diikat kepada company yang dipilih.</div>
  <div class="tabs" id="bankTabs"></div><div id="bankWorkspace"></div>
 </section>
 
 <section id="tax" class="view">
- <div class="header"><div><h1>Kiraan Cukai</h1><p>Multi-year dan multi-taxpayer. Setiap tahun boleh ada template, relief dan bracket sendiri.</p></div><div class="actions"><button class="btn primary" id="addYear">+ Add Year</button><button class="btn" id="addTaxpayer">+ Add Taxpayer</button><button class="btn success" onclick="saveTaxFirebase()">Save Firebase</button></div></div>
- <div class="companyBar"><div class="field"><label>Search Company</label><input id="taxCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Selected Company</label><select id="taxCompanySelect" class="input"></select></div><button id="taxHistoryBtn" class="btn">History</button></div><div id="taxHistory" class="card historyBox" style="display:none"></div><div class="notice">Flow kiraan: Untung Bersih Seperti Akaun → Add-back → Jumlah Pendapatan → Tolak Pelepasan → Pendapatan Kena Cukai → Tax Bracket → Rebate/Zakat → Cukai Kena Bayar. Rekod Kiraan Cukai diikat kepada company yang dipilih.</div>
+ <div class="header"><div><h1>Kiraan Cukai</h1><p>Draft dan final record disimpan mengikut Job ID supaya tahun/company tidak bercampur.</p></div><div class="actions"><button class="btn primary" id="addYear">+ Add Year</button><button class="btn" id="addTaxpayer">+ Add Taxpayer</button><button class="btn success" id="saveTaxDraft">Save Draft</button><button class="btn primary" id="completeTax">Complete & Send →</button></div></div>
+ <div class="companyBar"><div class="field"><label>Search Company</label><input id="taxCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Company</label><select id="taxCompanySelect" class="input"></select></div><div class="field"><label>Operational Job</label><select id="taxJobSelect" class="input"></select></div><button id="taxHistoryBtn" class="btn">History</button></div><div id="taxHistory" class="card historyBox" style="display:none"></div><div class="notice">Flow kiraan: Untung Bersih Seperti Akaun → Add-back → Jumlah Pendapatan → Tolak Pelepasan → Pendapatan Kena Cukai → Tax Bracket → Rebate/Zakat → Cukai Kena Bayar. Rekod Kiraan Cukai diikat kepada company yang dipilih.</div>
  <div class="yearGrid" id="taxWorkspace"></div>
 </section>
 
@@ -273,6 +273,40 @@ function renderCompanyHistory(type){
  box.innerHTML=`<div class="cardHead"><div><h2>${type==="bank"?"Bank Summary":"Kiraan Cukai"} History</h2><div class="muted">${company}</div></div><button class="btn primary">+ New Record</button></div>${data.length?data.map(x=>`<div class="historyItem"><b>${x}</b><button class="btn">Open</button></div>`).join(""):'<div class="muted">Belum ada rekod untuk company ini.</div>'}`;
 }
 
+
+window.loadBankDraft=async function loadBankDraft(){
+ const job=selectedModuleJob("bank");
+ bankAccounts.splice(0,bankAccounts.length); activeBank=0;
+ if(!job){renderBankTabs();renderBank();return}
+ const F=window.URUZ_FIREBASE;
+ if(F?.db){
+   try{
+     const snap=await F.getDoc(F.doc(F.db,"bankSummaries",job.id));
+     if(snap.exists()){
+       const d=snap.data();
+       (d.accounts||[]).forEach(a=>bankAccounts.push(a));
+     }
+   }catch(e){console.error("Bank draft load failed",e)}
+ }
+ window.bankAccounts=bankAccounts; renderBankTabs();renderBank();
+}
+window.loadTaxDraft=async function loadTaxDraft(){
+ const job=selectedModuleJob("tax");
+ taxCols.splice(0,taxCols.length);
+ if(!job){window.taxCols=taxCols;renderTax();return}
+ const F=window.URUZ_FIREBASE;
+ if(F?.db){
+   try{
+     const snap=await F.getDoc(F.doc(F.db,"taxComputations",job.id));
+     if(snap.exists()){
+       const d=snap.data();
+       (d.columns||[]).forEach(c=>taxCols.push(c));
+     }
+   }catch(e){console.error("Tax draft load failed",e)}
+ }
+ window.taxCols=taxCols;renderTax();
+}
+
 let bankAccounts=[];
 window.bankAccounts=bankAccounts;
 let activeBank=0;
@@ -349,9 +383,30 @@ $("#crmSearch").oninput=renderCRM;$("#crmPicFilter").onchange=renderCRM;
 $("#crmAddCompany").onclick=()=>show("intake");
 
 function refreshOperationalSelectors(){
- const names=[...new Set(appState.jobs.map(j=>appState.companies.find(c=>c.id===j.companyId)?.name).filter(Boolean))];
- ["bankCompanySelect","taxCompanySelect"].forEach(id=>{let s=$("#"+id);if(s)s.innerHTML=names.length?names.map(n=>`<option>${n}</option>`).join(""):`<option value="">No operational job yet</option>`});
+ const names=[...new Set(appState.jobs.filter(j=>j.status!=="closed").map(j=>appState.companies.find(c=>c.id===j.companyId)?.name).filter(Boolean))];
+ ["bankCompanySelect","taxCompanySelect"].forEach(id=>{
+   const s=$("#"+id); if(!s)return;
+   const previous=s.value;
+   s.innerHTML=names.length?names.map(n=>`<option>${n}</option>`).join(""):`<option value="">No operational job yet</option>`;
+   if(names.includes(previous))s.value=previous;
+ });
+ refreshModuleJobs("bank");
+ refreshModuleJobs("tax");
  renderAccSelector();
+}
+function refreshModuleJobs(type){
+ const company=$("#"+type+"CompanySelect")?.value||"";
+ const c=appState.companies.find(x=>x.name===company);
+ const select=$("#"+type+"JobSelect"); if(!select)return;
+ const allowedStage=type==="bank"?"bank":"tax";
+ const list=appState.jobs.filter(j=>j.companyId===c?.id && j.status!=="closed" && (j.stage===allowedStage || (j.workflow||[]).includes(allowedStage)));
+ const previous=select.value;
+ select.innerHTML=list.length?list.map(j=>`<option value="${j.id}">${j.id} • ${j.service} • ${j.period||"No period"} • ${stageLabel(j.stage)}</option>`).join(""):`<option value="">No matching job</option>`;
+ if(list.some(j=>j.id===previous))select.value=previous;
+}
+function selectedModuleJob(type){
+ const id=$("#"+type+"JobSelect")?.value;
+ return appState.jobs.find(j=>j.id===id)||null;
 }
 $("#createJobBtn").onclick=async()=>{
  const btn=$("#createJobBtn"),msg=$("#intakeMsg");
@@ -436,9 +491,61 @@ $("#accCompanySearch").oninput=renderAccSelector;$("#accJobSelect").onchange=ren
 renderCRM();refreshOperationalSelectors();
 
 fillCompany("bank");fillCompany("tax");
+
+async function saveBankDraft(showMessage=true){
+ const job=selectedModuleJob("bank");
+ if(!job)return alert("Pilih Operational Job dahulu.");
+ if(job.stage!=="bank" && showMessage){
+   if(!confirm(`Job ini sekarang di ${stageLabel(job.stage)}, bukan Bank Summary. Simpan draft tanpa gerakkan job?`))return false;
+ }
+ const c=appState.companies.find(x=>x.id===job.companyId),F=window.URUZ_FIREBASE;
+ if(!F?.db)return alert("Firebase belum connected.");
+ const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",accounts:bankAccounts,updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
+ await F.setDoc(F.doc(F.db,"bankSummaries",job.id),rec,{merge:true});
+ if(showMessage)alert("Bank Summary draft saved ✓");
+ return true;
+}
+async function saveTaxDraft(showMessage=true){
+ const job=selectedModuleJob("tax");
+ if(!job)return alert("Pilih Operational Job dahulu.");
+ if(job.stage!=="tax" && showMessage){
+   if(!confirm(`Job ini sekarang di ${stageLabel(job.stage)}, bukan Kiraan Cukai. Simpan draft tanpa gerakkan job?`))return false;
+ }
+ const c=appState.companies.find(x=>x.id===job.companyId),F=window.URUZ_FIREBASE;
+ if(!F?.db)return alert("Firebase belum connected.");
+ const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",columns:taxCols,updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
+ await F.setDoc(F.doc(F.db,"taxComputations",job.id),rec,{merge:true});
+ if(showMessage)alert("Kiraan Cukai draft saved ✓");
+ return true;
+}
+async function completeModule(type){
+ const job=selectedModuleJob(type);
+ const required=type==="bank"?"bank":"tax";
+ if(!job)return alert("Pilih Operational Job dahulu.");
+ if(job.stage!==required)return alert(`Job ini masih di ${stageLabel(job.stage)}. Complete hanya boleh dibuat apabila Current Stage ialah ${stageLabel(required)}.`);
+ const saved=type==="bank"?await saveBankDraft(false):await saveTaxDraft(false);
+ if(!saved)return;
+ const F=window.URUZ_FIREBASE;
+ const coll=type==="bank"?"bankSummaries":"taxComputations";
+ await F.setDoc(F.doc(F.db,coll,job.id),{status:"completed",completedAt:F.serverTimestamp()},{merge:true});
+ const flow=workflowFor(job),idx=flow.indexOf(job.stage),next=flow[idx+1];
+ if(!next)return alert("Record completed. Tiada next stage dalam workflow.");
+ alert(`${type==="bank"?"Bank Summary":"Kiraan Cukai"} completed ✓\nSeterusnya pilih PIC dan Stage Due untuk ${stageLabel(next)}.`);
+ openWorkflow(job.id);
+ setTimeout(()=>showHandoffForm(job,next),50);
+}
+window.saveBankDraft=saveBankDraft;
+window.saveTaxDraft=saveTaxDraft;
+$("#saveBankDraft").onclick=()=>saveBankDraft(true);
+$("#saveTaxDraft").onclick=()=>saveTaxDraft(true);
+$("#completeBank").onclick=()=>completeModule("bank");
+$("#completeTax").onclick=()=>completeModule("tax");
+
 $("#bankCompanySearch").oninput=()=>fillCompany("bank");$("#taxCompanySearch").oninput=()=>fillCompany("tax");
-$("#bankCompanySelect").onchange=e=>{currentBankCompany=e.target.value;renderBank();if($("#bankHistory").style.display!=="none")renderCompanyHistory("bank")};
-$("#taxCompanySelect").onchange=e=>{currentTaxCompany=e.target.value;renderTax();if($("#taxHistory").style.display!=="none")renderCompanyHistory("tax")};
+$("#bankCompanySelect").onchange=e=>{currentBankCompany=e.target.value;refreshModuleJobs("bank");loadBankDraft();if($("#bankHistory").style.display!=="none")renderCompanyHistory("bank")};
+$("#taxCompanySelect").onchange=e=>{currentTaxCompany=e.target.value;refreshModuleJobs("tax");loadTaxDraft();if($("#taxHistory").style.display!=="none")renderCompanyHistory("tax")};
+$("#bankJobSelect").onchange=()=>loadBankDraft();
+$("#taxJobSelect").onchange=()=>loadTaxDraft();
 $("#bankHistoryBtn").onclick=()=>{let b=$("#bankHistory");b.style.display=b.style.display==="none"?"block":"none";if(b.style.display==="block")renderCompanyHistory("bank")};
 $("#taxHistoryBtn").onclick=()=>{let b=$("#taxHistory");b.style.display=b.style.display==="none"?"block":"none";if(b.style.display==="block")renderCompanyHistory("tax")};
 renderDash();renderBankTabs();renderBank();renderTax();setTimeout(()=>$("#splash").classList.add("hide"),3000);
@@ -448,7 +555,7 @@ if("serviceWorker"in navigator){addEventListener("load",()=>navigator.serviceWor
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, addDoc, getDocs, getDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 const AMIR_UID="A5GLNpoxXnUi6U0gHuMET7Yucqi2";
@@ -460,7 +567,7 @@ setTimeout(hideSplash,3000);
 
 try{
  const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
- window.URUZ_FIREBASE={db,auth,collection,doc,setDoc,addDoc,getDocs,query,where,serverTimestamp};
+ window.URUZ_FIREBASE={db,auth,collection,doc,setDoc,addDoc,getDocs,getDoc,query,where,serverTimestamp};
 
  const loadCollection=async name=>{
    const snap=await getDocs(collection(db,name));
@@ -496,6 +603,7 @@ try{
    window.renderCRM?.();
    window.refreshOperationalSelectors?.();
    window.renderDash?.();
+   setTimeout(()=>{window.loadBankDraft?.();window.loadTaxDraft?.()},0);
    syncState(`Firestore: synced • ${companies.length} companies • ${jobs.length} jobs`,"ok");
  };
 
@@ -522,22 +630,8 @@ try{
  });
  document.querySelector("#logoutBtn")?.addEventListener("click",()=>signOut(auth));
 
- window.saveBankSummaryFirebase=async()=>{
-   if(auth.currentUser?.uid!==AMIR_UID)return alert("Access denied.");
-   const company=document.querySelector("#bankCompanySelect")?.value;
-   if(!company)return alert("Pilih company dahulu.");
-   const id=(company+"-bank-"+new Date().getFullYear()).replace(/[^a-z0-9]+/gi,"-").toLowerCase();
-   await setDoc(doc(db,"bankSummaries",id),{company,accounts:window.bankAccounts||[],updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
-   syncState("Firestore: Bank Summary saved","ok");
- };
- window.saveTaxFirebase=async()=>{
-   if(auth.currentUser?.uid!==AMIR_UID)return alert("Access denied.");
-   const company=document.querySelector("#taxCompanySelect")?.value;
-   if(!company)return alert("Pilih company dahulu.");
-   const id=(company+"-tax").replace(/[^a-z0-9]+/gi,"-").toLowerCase();
-   await setDoc(doc(db,"taxComputations",id),{company,columns:window.taxCols||[],updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
-   syncState("Firestore: Tax saved","ok");
- };
+ window.saveBankSummaryFirebase=()=>window.saveBankDraft?.();
+ window.saveTaxFirebase=()=>window.saveTaxDraft?.();
 }catch(e){
  console.error("Firebase bootstrap failed:",e);
  hideSplash();
