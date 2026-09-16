@@ -76,6 +76,10 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 .metaGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .docList{display:grid;gap:8px}.docRow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px;border:1px solid #29465a;border-radius:10px;background:#081b29}
 @media(max-width:900px){.intakeGrid,.metaGrid{grid-template-columns:1fr}}
+
+@keyframes uruzSplashFailSafe{0%,92%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden;pointer-events:none}}
+#splash{animation:uruzSplashFailSafe 3.35s forwards}
+#splash.hide{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 </style>
 </head>
 <body>
@@ -384,61 +388,99 @@ import { getFirestore, collection, doc, setDoc, addDoc, getDocs, query, where, s
 import { firebaseConfig } from "./firebase-config.js";
 
 const AMIR_UID="A5GLNpoxXnUi6U0gHuMET7Yucqi2";
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-window.URUZ_FIREBASE={db,auth,collection,doc,setDoc,addDoc,getDocs,query,where,serverTimestamp};
-
 const gate=document.querySelector("#authGate"), userBox=document.querySelector("#authUser"), err=document.querySelector("#loginError");
-window.loadCollectionOnDemand=async function(name){
- syncState("Firestore: loading "+name+"…","busy");
- const data=await loadCollection(name); window.appState[name]=data; syncState("Firestore: synced","ok"); return data;
-};
-window.saveLocalDraft=(key,data)=>localStorage.setItem("uruz-draft-"+key,JSON.stringify(data));
-window.loadLocalDraft=key=>{try{return JSON.parse(localStorage.getItem("uruz-draft-"+key)||"null")}catch(e){return null}};
-window.clearLocalDraft=key=>localStorage.removeItem("uruz-draft-"+key);
-onAuthStateChanged(auth,async user=>{
- if(user && user.uid===AMIR_UID){
-   gate.classList.remove("show"); userBox.style.display="flex";
- }else{
-   if(user) await signOut(auth);
-   gate.classList.add("show"); userBox.style.display="none";
- }
-});
+const pill=document.querySelector("#syncPill");
+const syncState=(text,kind="busy")=>{if(pill){pill.textContent=text;pill.className="syncPill "+kind}};
+const hideSplash=()=>document.querySelector("#splash")?.classList.add("hide");
+setTimeout(hideSplash,3000);
 
-document.querySelector("#loginForm").addEventListener("submit",async e=>{
- e.preventDefault();err.textContent="";
- try{
-   const cred=await signInWithEmailAndPassword(auth,document.querySelector("#loginEmail").value.trim(),document.querySelector("#loginPassword").value);
-   if(cred.user.uid!==AMIR_UID){await signOut(auth);throw new Error("Akaun ini tidak mempunyai Full Access.");}
- }catch(ex){err.textContent=ex.message.includes("Full Access")?ex.message:"Login gagal. Semak email dan password."}
-});
-document.querySelector("#logoutBtn").onclick=()=>signOut(auth);
+try{
+ const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
+ window.URUZ_FIREBASE={db,auth,collection,doc,setDoc,addDoc,getDocs,query,where,serverTimestamp};
 
-window.saveBankSummaryFirebase=async()=>{
- if(auth.currentUser?.uid!==AMIR_UID)return alert("Access denied.");
- const company=window.currentBankCompany||document.querySelector("#bankCompanySelect")?.value;
- const accounts=window.bankAccounts||[];
- const id=(company+"-bank-"+new Date().getFullYear()).replace(/[^a-z0-9]+/gi,"-").toLowerCase();
- await setDoc(doc(db,"bankSummaries",id),{company,year:new Date().getFullYear(),accounts,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
- alert("Bank Summary saved.");
-};
-window.saveTaxFirebase=async()=>{
- if(auth.currentUser?.uid!==AMIR_UID)return alert("Access denied.");
- const company=window.currentTaxCompany||document.querySelector("#taxCompanySelect")?.value;
- const columns=window.taxCols||[];
- const id=(company+"-tax").replace(/[^a-z0-9]+/gi,"-").toLowerCase();
- await setDoc(doc(db,"taxComputations",id),{company,columns,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
- alert("Kiraan Cukai saved.");
-};
-window.loadCompanyRecordsFirebase=async company=>{
- const result={bank:[],tax:[]};
- let snap=await getDocs(query(collection(db,"bankSummaries"),where("company","==",company)));
- snap.forEach(x=>result.bank.push({id:x.id,...x.data()}));
- snap=await getDocs(query(collection(db,"taxComputations"),where("company","==",company)));
- snap.forEach(x=>result.tax.push({id:x.id,...x.data()}));
- return result;
-};
+ const loadCollection=async name=>{
+   const snap=await getDocs(collection(db,name));
+   return snap.docs.map(d=>({id:d.id,...d.data()}));
+ };
+ window.loadCollectionOnDemand=async name=>{
+   syncState("Firestore: loading "+name+"…","busy");
+   const data=await loadCollection(name);
+   if(window.appState) window.appState[name]=data;
+   syncState("Firestore: synced","ok");
+   return data;
+ };
+ window.saveLocalDraft=(key,data)=>localStorage.setItem("uruz-draft-"+key,JSON.stringify(data));
+ window.loadLocalDraft=key=>{try{return JSON.parse(localStorage.getItem("uruz-draft-"+key)||"null")}catch{return null}};
+ window.clearLocalDraft=key=>localStorage.removeItem("uruz-draft-"+key);
+
+ const loadCore=async()=>{
+   syncState("Firestore: loading core data…","busy");
+   const [companies,jobs]=await Promise.all([loadCollection("companies"),loadCollection("jobs")]);
+   if(window.appState){
+     window.appState.companies=companies;
+     window.appState.jobs=jobs;
+   }
+   if(window.jobs){
+     window.jobs.splice(0,window.jobs.length,...jobs.map(j=>({
+       company:companies.find(c=>c.id===j.companyId)?.name||j.companyId,
+       stage:j.stage||"sorting",pic:j.pic||"-",
+       entered:String(j.createdAt||"").slice(0,10),
+       due:j.stageDue||j.overallDue||"9999-12-31",
+       completed:j.completedAt||null,block:j.block||"",payment:j.paymentStatus||"Unpaid"
+     })));
+   }
+   window.renderCRM?.();
+   window.refreshOperationalSelectors?.();
+   window.renderDash?.();
+   syncState(`Firestore: synced • ${companies.length} companies • ${jobs.length} jobs`,"ok");
+ };
+
+ onAuthStateChanged(auth,async user=>{
+   hideSplash();
+   if(user && user.uid===AMIR_UID){
+     gate?.classList.remove("show");
+     if(userBox) userBox.style.display="flex";
+     try{await loadCore()}catch(e){console.error(e);syncState("Firestore: core sync failed","err")}
+   }else{
+     if(user) await signOut(auth);
+     gate?.classList.add("show");
+     if(userBox) userBox.style.display="none";
+     syncState("Firestore: login required","busy");
+   }
+ });
+
+ document.querySelector("#loginForm")?.addEventListener("submit",async e=>{
+   e.preventDefault(); if(err) err.textContent="";
+   try{
+     const cred=await signInWithEmailAndPassword(auth,document.querySelector("#loginEmail").value.trim(),document.querySelector("#loginPassword").value);
+     if(cred.user.uid!==AMIR_UID){await signOut(auth);throw new Error("NO_ACCESS")}
+   }catch(e){if(err)err.textContent="Login gagal. Semak email/password atau access account."}
+ });
+ document.querySelector("#logoutBtn")?.addEventListener("click",()=>signOut(auth));
+
+ window.saveBankSummaryFirebase=async()=>{
+   if(auth.currentUser?.uid!==AMIR_UID)return alert("Access denied.");
+   const company=document.querySelector("#bankCompanySelect")?.value;
+   if(!company)return alert("Pilih company dahulu.");
+   const id=(company+"-bank-"+new Date().getFullYear()).replace(/[^a-z0-9]+/gi,"-").toLowerCase();
+   await setDoc(doc(db,"bankSummaries",id),{company,accounts:window.bankAccounts||[],updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
+   syncState("Firestore: Bank Summary saved","ok");
+ };
+ window.saveTaxFirebase=async()=>{
+   if(auth.currentUser?.uid!==AMIR_UID)return alert("Access denied.");
+   const company=document.querySelector("#taxCompanySelect")?.value;
+   if(!company)return alert("Pilih company dahulu.");
+   const id=(company+"-tax").replace(/[^a-z0-9]+/gi,"-").toLowerCase();
+   await setDoc(doc(db,"taxComputations",id),{company,columns:window.taxCols||[],updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});
+   syncState("Firestore: Tax saved","ok");
+ };
+}catch(e){
+ console.error("Firebase bootstrap failed:",e);
+ hideSplash();
+ gate?.classList.add("show");
+ syncState("Firebase setup/error • app unlocked from splash","err");
+ if(err)err.textContent="Firebase connection error. Semak config/deployment.";
+}
 </script>
 
 </body>
