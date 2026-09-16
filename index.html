@@ -134,78 +134,35 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
-/* V17.6 account UI: never overlay operational buttons */
-#authUser.accountBar{
+/* V17.9 HOTFIX: preserve V17.5 UI exactly; only remove account overlay */
+#authUser{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Logout lives inside the existing sidebar profile card, never over content */
+.sidebarProfileLogout{
+  display:block;
+  width:100%;
+  margin-top:8px;
+  padding:7px 9px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  background:rgba(255,255,255,.04);
+  color:inherit;
+  font:inherit;
+  font-size:11px;
+  cursor:pointer;
   position:static!important;
   inset:auto!important;
   transform:none!important;
   z-index:auto!important;
-  width:auto!important;
-  max-width:none!important;
-  margin:0 0 14px 0!important;
-  padding:8px 12px!important;
-  min-height:44px;
-  display:none;
-  align-items:center;
-  justify-content:flex-end;
-  gap:10px;
-  flex-wrap:wrap;
-  border-radius:12px;
-  box-sizing:border-box;
 }
-#authUser.accountBar{display:none!important}
-#authUser.accountBar .btn{flex:0 0 auto}
-#authUser.accountBar .muted,
-#authUser.accountBar small{white-space:nowrap}
-main{position:relative}
+.sidebarProfileLogout:hover{background:rgba(255,255,255,.08)}
 @media(max-width:900px){
- #authUser.accountBar{
-   justify-content:space-between;
-   margin-bottom:10px!important;
-   padding:8px 10px!important;
- }
+  .sidebarProfileLogout{display:none!important}
 }
-@media(max-width:520px){
- #authUser.accountBar{
-   display:none!important;
- }
- /* logout remains available from the mobile navigation clone below */
- #mobileAccountBar{
-   display:flex!important;
-   align-items:center;
-   justify-content:space-between;
-   gap:8px;
-   padding:8px 10px;
-   margin:8px 10px;
-   border-radius:12px;
-   font-size:11px;
- }
- #mobileAccountBar .btn{padding:7px 10px;font-size:11px;width:auto!important}
-}
-@media(min-width:521px){#mobileAccountBar{display:none!important}}
-
-/* V17.7 hard fix: zero floating account overlay */
-#authUser,#mobileAccountBar{display:none!important;position:static!important;pointer-events:none!important}
-.sidebarLogout{
- position:fixed;
- left:18px;
- bottom:18px;
- width:calc(var(--side) - 36px);
- z-index:5;
-}
-.navLogout{display:none}
-@media(max-width:900px){
- .sidebarLogout{display:none!important}
- .navLogout{display:inline-flex!important;position:static!important;z-index:auto!important;width:auto!important;flex:0 0 auto!important}
-}
-
-/* V17.8 layout recovery */
-.shell{display:grid!important;grid-template-columns:220px minmax(0,1fr)!important;min-height:100vh}
-.sidebar{grid-column:1!important}
-#appMain{grid-column:2!important;min-width:0!important;width:100%!important;display:block!important;overflow-x:hidden}
-#authUser,#mobileAccountBar{display:none!important}
-.sidebarInlineLogout{display:block;width:100%;margin-top:8px;padding:7px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:inherit;font:inherit;cursor:pointer;position:static!important}
-@media(max-width:900px){.shell{display:block!important}#appMain{width:100%!important}.sidebarInlineLogout{display:none}}
 </style>
 </head>
 <body>
@@ -221,12 +178,12 @@ main{position:relative}
   </form>
  </div>
 </div>
-
+<div id="authUser" class="authUser"><span id="authName">Encik Amir • Full Access</span><button id="logoutBtn" class="btn" style="min-height:auto;padding:5px 8px">Logout</button></div>
 <div id="splash"><div class="splashInner"><img src="uruz-logo.png" alt="Uruz Consultancy"/><div class="sub">BEYOND NUMBERS</div><div class="loader"></div></div></div>
 <div class="shell">
 <aside class="sidebar">
  <div class="brand"><img src="uruz-logo.png" alt="Uruz Consultancy"/></div>
- <div class="profile"><small>FULL ACCESS</small><b>Encik Amir • HOD</b><button id="sidebarLogoutBtn" class="sidebarInlineLogout" type="button">Log Out</button></div>
+ <div class="profile"><small>FULL ACCESS</small><b>Encik Amir • HOD</b><button id="sidebarProfileLogout" class="sidebarProfileLogout" type="button">Log Out</button></div>
  <div class="nav">
   <button class="active" data-view="dashboard"><span>⌂</span><span class="label">Flow Dashboard</span></button>
   <button data-view="intake"><span>＋</span><span class="label">Doc Intake & Sorting</span></button>
@@ -238,10 +195,9 @@ main{position:relative}
   <button data-view="audit"><span>⌕</span><span class="label">Audit Trail</span></button>
  </div>
 </aside>
-<main id="appMain">
-
-
-
+<main>
+<section id="dashboard" class="view active">
+ <div class="header"><div><h1>Flow Dashboard</h1><p>Live work queues + Stage Handoff. Klik nama company untuk gerakkan job, assign PIC, set due atau mark waiting.</p></div><div class="controls"><div class="control"><label>As of date</label><input class="input" id="asOfDate" type="date"/></div><button class="btn primary" id="todayBtn">Today</button></div></div>
  <div class="searchWrap"><input id="search" class="input" placeholder="Cari company..."/><button class="btn" id="clearSearch">Clear</button></div>
  <div class="stageStrip" id="stageStrip"></div>
  <div class="layout"><section class="card"><div class="cardHead"><div><h2 id="tableTitle">Bank Summary</h2><div class="muted" id="tableSub"></div></div><div class="muted" id="tableCount"></div></div><div class="scroll"><table><thead><tr><th>Company</th><th>PIC</th><th>Due</th><th>Days in Stage</th><th>Status</th><th>Payment</th></tr></thead><tbody id="rows"></tbody></table></div></section>
@@ -256,6 +212,9 @@ main{position:relative}
    <div class="formgrid">
     <div class="field span2"><label>Search / Select Company</label><input id="intakeCompany" placeholder="Taip nama company..."></div>
     <div class="field"><label>PIC Uruz</label><select id="intakeCompanyPic"><option value="">Select PIC</option><option>Amir</option><option>Syiqa</option><option>Zatty</option><option>Ain</option></select><div class="muted" style="margin-top:5px">PIC utama company. Syiqa automatik mengurus Intake & Sorting.</div></div>
+    <div class="field"><label>Client Contact / PIC</label><input id="intakeContact" placeholder="Nama contact person"></div>
+    <div class="field"><label>Phone</label><input id="intakePhone" type="tel" placeholder="Contoh 012-345 6789"></div>
+    <div class="field"><label>Email</label><input id="intakeEmail" type="email" placeholder="contoh@company.com"></div>
     <div class="field"><label>Service / Job Type</label><select id="intakeService"><option>Account & Tax</option><option>Bookkeeping</option><option>HR Service</option><option>SSM Registration</option><option>Stamping</option><option>Form P</option><option>Other Services</option></select></div>
     <div class="field"><label>Financial Year / Period</label><input id="intakePeriod" placeholder="Contoh YA2025 / Jan-Dec 2026"></div>
     <div class="field"><label>Overall Due Date</label><input id="intakeDue" type="date"></div>
@@ -546,10 +505,26 @@ function selectedModuleJob(type){
  const id=$("#"+type+"JobSelect")?.value;
  return appState.jobs.find(j=>j.id===id)||null;
 }
+
+function prefillIntakeCompanyContact(){
+ const name=$("#intakeCompany").value.trim().toLowerCase();
+ const c=appState.companies.find(x=>x.name.toLowerCase()===name);
+ if(!c)return;
+ $("#intakeCompanyPic").value=c.pic||"";
+ $("#intakeContact").value=c.contact||"";
+ $("#intakePhone").value=c.phone||"";
+ $("#intakeEmail").value=c.email||"";
+}
+$("#intakeCompany").addEventListener("change",prefillIntakeCompanyContact);
+$("#intakeCompany").addEventListener("blur",prefillIntakeCompanyContact);
+
 $("#createJobBtn").onclick=async()=>{
  const btn=$("#createJobBtn"),msg=$("#intakeMsg");
  const name=$("#intakeCompany").value.trim();
  const companyPic=$("#intakeCompanyPic").value;
+ const contact=$("#intakeContact").value.trim();
+ const phone=$("#intakePhone").value.trim();
+ const email=$("#intakeEmail").value.trim();
  if(!name||!companyPic){
    msg.style.color="#ffb36b";
    msg.textContent="Nama company dan PIC Uruz diperlukan.";
@@ -559,9 +534,15 @@ $("#createJobBtn").onclick=async()=>{
  try{
    let company=appState.companies.find(c=>c.name.toLowerCase()===name.toLowerCase());
    if(!company){
-     company={id:"CMP-"+Date.now(),name,pic:companyPic,contact:"",phone:"",email:"",createdAt:new Date().toISOString()};
+     company={id:"CMP-"+Date.now(),name,pic:companyPic,contact,phone,email,createdAt:new Date().toISOString()};
      appState.companies.push(company);
-   }else company.pic=companyPic;
+   }else{
+     company.pic=companyPic;
+     company.contact=contact;
+     company.phone=phone;
+     company.email=email;
+     company.updatedAt=new Date().toISOString();
+   }
 
    const job={
      id:"JOB-"+Date.now(),companyId:company.id,
@@ -577,6 +558,8 @@ $("#createJobBtn").onclick=async()=>{
    renderCRM();refreshOperationalSelectors();renderDash();
    msg.style.color="#7fe39c";
    msg.textContent=`${job.id} opened • ${name} • PIC ${companyPic} • Intake Syiqa`;
+   ["intakeCompany","intakeContact","intakePhone","intakeEmail","intakePeriod","intakeDue","intakeStageDue","intakeNotes"].forEach(id=>{const el=$("#"+id);if(el)el.value=""});
+   $("#intakeCompanyPic").value="";
 
    if(window.URUZ_FIREBASE?.db){
      const F=window.URUZ_FIREBASE;
@@ -741,11 +724,11 @@ $("#taxHistoryBtn").onclick=()=>{let b=$("#taxHistory");b.style.display=b.style.
 renderDash();renderBankTabs();renderBank();renderTax();setTimeout(()=>$("#splash").classList.add("hide"),3000);
 if("serviceWorker"in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
 
-const mobileLogoutBtn=document.querySelector("#mobileLogoutBtn");
-if(mobileLogoutBtn) mobileLogoutBtn.addEventListener("click",()=>document.querySelector("#logoutBtn")?.click());
+document.addEventListener("DOMContentLoaded",()=>{
+  const b=document.getElementById("sidebarProfileLogout");
+  if(b) b.addEventListener("click",()=>document.getElementById("logoutBtn")?.click());
+});
 
-
-document.addEventListener("DOMContentLoaded",()=>document.getElementById("sidebarLogoutBtn")?.addEventListener("click",()=>document.getElementById("logoutBtn")?.click()));
 </script>
 
 <script type="module">
