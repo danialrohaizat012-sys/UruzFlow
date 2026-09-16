@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAmir() {
+      return request.auth != null &&
+             request.auth.uid == "A5GLNpoxXnUi6U0gHuMET7Yucqi2";
+    }
+    match /{document=**} {
+      allow read, write: if isAmir();
+    }
+  }
+}
