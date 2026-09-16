@@ -133,6 +133,57 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 @media (prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* V17.6 account UI: never overlay operational buttons */
+#authUser.accountBar{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  z-index:auto!important;
+  width:auto!important;
+  max-width:none!important;
+  margin:0 0 14px 0!important;
+  padding:8px 12px!important;
+  min-height:44px;
+  display:none;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+  border-radius:12px;
+  box-sizing:border-box;
+}
+#authUser.accountBar[style*="display: flex"],
+#authUser.accountBar[style*="display:flex"]{display:flex!important}
+#authUser.accountBar .btn{flex:0 0 auto}
+#authUser.accountBar .muted,
+#authUser.accountBar small{white-space:nowrap}
+main{position:relative}
+@media(max-width:900px){
+ #authUser.accountBar{
+   justify-content:space-between;
+   margin-bottom:10px!important;
+   padding:8px 10px!important;
+ }
+}
+@media(max-width:520px){
+ #authUser.accountBar{
+   display:none!important;
+ }
+ /* logout remains available from the mobile navigation clone below */
+ #mobileAccountBar{
+   display:flex!important;
+   align-items:center;
+   justify-content:space-between;
+   gap:8px;
+   padding:8px 10px;
+   margin:8px 10px;
+   border-radius:12px;
+   font-size:11px;
+ }
+ #mobileAccountBar .btn{padding:7px 10px;font-size:11px;width:auto!important}
+}
+@media(min-width:521px){#mobileAccountBar{display:none!important}}
 </style>
 </head>
 <body>
@@ -148,7 +199,7 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
   </form>
  </div>
 </div>
-<div id="authUser" class="authUser"><span id="authName">Encik Amir • Full Access</span><button id="logoutBtn" class="btn" style="min-height:auto;padding:5px 8px">Logout</button></div>
+
 <div id="splash"><div class="splashInner"><img src="uruz-logo.png" alt="Uruz Consultancy"/><div class="sub">BEYOND NUMBERS</div><div class="loader"></div></div></div>
 <div class="shell">
 <aside class="sidebar">
@@ -165,7 +216,14 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
   <button data-view="audit"><span>⌕</span><span class="label">Audit Trail</span></button>
  </div>
 </aside>
+
+<div id="mobileAccountBar">
+  <span><b>Encik Amir</b> · Full Access</span>
+  <button class="btn" id="mobileLogoutBtn" type="button">Log Out</button>
+</div>
 <main>
+<div id="authUser" class="authUser" class="accountBar"><span id="authName">Encik Amir • Full Access</span><button id="logoutBtn" class="btn" style="min-height:auto;padding:5px 8px">Logout</button></div>
+
 <section id="dashboard" class="view active">
  <div class="header"><div><h1>Flow Dashboard</h1><p>Live work queues + Stage Handoff. Klik nama company untuk gerakkan job, assign PIC, set due atau mark waiting.</p></div><div class="controls"><div class="control"><label>As of date</label><input class="input" id="asOfDate" type="date"/></div><button class="btn primary" id="todayBtn">Today</button></div></div>
  <div class="searchWrap"><input id="search" class="input" placeholder="Cari company..."/><button class="btn" id="clearSearch">Clear</button></div>
@@ -666,6 +724,10 @@ $("#bankHistoryBtn").onclick=()=>{let b=$("#bankHistory");b.style.display=b.styl
 $("#taxHistoryBtn").onclick=()=>{let b=$("#taxHistory");b.style.display=b.style.display==="none"?"block":"none";if(b.style.display==="block")renderCompanyHistory("tax")};
 renderDash();renderBankTabs();renderBank();renderTax();setTimeout(()=>$("#splash").classList.add("hide"),3000);
 if("serviceWorker"in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+
+const mobileLogoutBtn=document.querySelector("#mobileLogoutBtn");
+if(mobileLogoutBtn) mobileLogoutBtn.addEventListener("click",()=>document.querySelector("#logoutBtn")?.click());
+
 </script>
 
 <script type="module">
