@@ -237,14 +237,14 @@ main{min-width:0;padding:25px 28px 40px}.view{display:none}.view.active{display:
 </section>
 
 <section id="bank" class="view">
- <div class="header"><div><h1>Bank Summary</h1><p>Draft disimpan terus ke Firestore mengikut Job ID. Complete hanya bila Bank Summary betul-betul siap.</p></div><div class="actions"><button class="btn primary" id="addBank">+ Add Bank Account</button><button class="btn success" id="saveBankDraft">Save Draft</button><button class="btn" id="exportBankPdf">Export PDF</button><button class="btn primary" id="completeBank">Complete & Send →</button><span id="bankDraftStatus" class="draftStatus">Firestore draft</span></div></div>
+ <div class="header"><div><h1>Bank Summary</h1><p>Draft disimpan terus ke Firestore mengikut Job ID. Complete hanya bila Bank Summary betul-betul siap.</p></div><div class="actions"><button class="btn primary" id="addBank">+ Add Bank Account</button><button class="btn success" id="saveBankDraft" title="Simpan Bank Summary ini ke Firestore mengikut Job ID">Save Draft</button><button class="btn" id="exportBankPdf" title="Buka dokumen A4 untuk Save as PDF">Export PDF</button><button class="btn primary" id="completeBank">Complete & Send →</button><span id="bankDraftStatus" class="draftStatus">Firestore draft</span></div></div>
  <div class="companyBar"><div class="field"><label>Search Company</label><input id="bankCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Company</label><select id="bankCompanySelect" class="input"></select></div><div class="field"><label>Operational Job</label><select id="bankJobSelect" class="input"></select></div><button id="bankHistoryBtn" class="btn">History</button></div><div id="bankHistory" class="card historyBox" style="display:none"></div><div class="notice">Formula berdasarkan contoh Uruz: Balance bulanan = CR − DR. Running Balance = balance sebelumnya + balance bulanan. Rekod Bank Summary diikat kepada company yang dipilih.</div>
  <div class="tabs" id="bankTabs"></div><div id="bankWorkspace"></div>
 </section>
 
 <section id="tax" class="view">
- <div class="header"><div><h1>Kiraan Cukai</h1><p>Draft disimpan terus ke Firestore mengikut Job ID supaya tahun/company tidak bercampur.</p></div><div class="actions"><button class="btn primary" id="addYear">+ Add Year</button><button class="btn" id="addTaxpayer">+ Add Taxpayer</button><button class="btn success" id="saveTaxDraft">Save Draft</button><button class="btn" id="exportTaxPdf">Export PDF</button><button class="btn primary" id="completeTax">Complete & Send →</button><span id="taxDraftStatus" class="draftStatus">Firestore draft</span></div></div>
- <div class="companyBar"><div class="field"><label>Search Company</label><input id="taxCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Company</label><select id="taxCompanySelect" class="input"></select></div><div class="field"><label>Operational Job</label><select id="taxJobSelect" class="input"></select></div><button id="taxHistoryBtn" class="btn">History</button></div><div id="taxHistory" class="card historyBox" style="display:none"></div><div class="notice">Flow kiraan: Untung Bersih Seperti Akaun → Add-back → Jumlah Pendapatan → Tolak Pelepasan → Pendapatan Kena Cukai → Tax Bracket → Rebate/Zakat → Cukai Kena Bayar. Rekod Kiraan Cukai diikat kepada company yang dipilih.</div>
+ <div class="header"><div><h1>Kiraan Cukai</h1><p>Draft disimpan terus ke Firestore mengikut Job ID supaya tahun/company tidak bercampur.</p></div><div class="actions"><button class="btn primary" id="addYear">+ Add Year</button><button class="btn" id="addTaxpayer">+ Add Taxpayer</button><button class="btn success" id="saveTaxDraft" title="Simpan Kiraan Cukai ini ke Firestore mengikut Job ID">Save Draft</button><button class="btn" id="exportTaxPdf" title="Buka dokumen A4 untuk Save as PDF">Export PDF</button><button class="btn primary" id="completeTax">Complete & Send →</button><span id="taxDraftStatus" class="draftStatus">Firestore draft</span></div></div>
+ <div class="companyBar"><div class="field"><label>Search Company</label><input id="taxCompanySearch" class="input" placeholder="Cari nama company..."></div><div class="field"><label>Company</label><select id="taxCompanySelect" class="input"></select></div><div class="field"><label>Operational Job</label><select id="taxJobSelect" class="input"></select></div><button id="taxHistoryBtn" class="btn">History</button></div><div id="taxHistory" class="card historyBox" style="display:none"></div><div class="notice">DRAF: Tax bracket dan had pelepasan belum disahkan mengikut tahun taksiran. HOD mesti menyemak sebelum filing. Flow kiraan: Untung Bersih Seperti Akaun → Add-back → Jumlah Pendapatan → Tolak Pelepasan → Pendapatan Kena Cukai → Tax Bracket → Rebate/Zakat → Cukai Kena Bayar. Rekod Kiraan Cukai diikat kepada company yang dipilih.</div>
  <div class="yearGrid" id="taxWorkspace"></div>
 </section>
 
@@ -370,54 +370,83 @@ const uruzCache={
 };
 let moduleLoadToken={bank:0,tax:0};
 function setDraftStatus(type,text,cls=""){
- const el=$("#"+type+"DraftStatus");if(el){el.textContent=text;el.className="draftStatus "+cls}
+ const el=$("#"+type+"DraftStatus");if(el){el.textContent=text;el.className="draftStatus "+cls;el.title=cls==="error"?"Klik untuk cuba muatkan semula":"";el.onclick=cls==="error"?()=>window.retryModuleDraft(type):null}
 }
 
-window.loadBankDraft=async function loadBankDraft(){
- const job=selectedModuleJob("bank"),token=++moduleLoadToken.bank;
- bankAccounts.splice(0,bankAccounts.length);activeBank=0;
- if(!job){renderBankTabs();renderBank();return}
- let data=uruzCache.bank.get(job.id);
- if(!data){
-   setDraftStatus("bank","Loading…");
-   const F=window.URUZ_FIREBASE;
-   if(F?.db){try{const snap=await F.getDoc(F.doc(F.db,"bankSummaries",job.id));if(token!==moduleLoadToken.bank)return;if(snap.exists())data=snap.data()}catch(e){console.error(e)}}
-   data=data||{accounts:[]};uruzCache.bank.set(job.id,data);
- }
- (data.accounts||[]).forEach(a=>bankAccounts.push(structuredClone(a)));
- window.bankAccounts=bankAccounts;renderBankTabs();renderBank();
- setDraftStatus("bank",bankAccounts.length?"Loaded ✓":"No saved draft","saved");
+const draftLoadFailures={bank:new Set(),tax:new Set()};
+function assertDraftReady(type,job){
+ if(draftLoadFailures[type].has(job.id)){alert("Draft gagal dimuatkan daripada Firestore. Cuba Retry Load sebelum menyimpan supaya data sedia ada tidak ditimpa.");return false}
+ return true;
 }
-window.loadTaxDraft=async function loadTaxDraft(){
- const job=selectedModuleJob("tax"),token=++moduleLoadToken.tax;
- taxCols.splice(0,taxCols.length);
- if(!job){window.taxCols=taxCols;renderTax();return}
- let data=uruzCache.tax.get(job.id);
- if(!data){
-   setDraftStatus("tax","Loading…");
-   const F=window.URUZ_FIREBASE;
-   if(F?.db){try{const snap=await F.getDoc(F.doc(F.db,"taxComputations",job.id));if(token!==moduleLoadToken.tax)return;if(snap.exists())data=snap.data()}catch(e){console.error(e)}}
-   data=data||{columns:[]};uruzCache.tax.set(job.id,data);
- }
- (data.columns||[]).forEach(c=>taxCols.push(structuredClone(c)));
- window.taxCols=taxCols;renderTax();
- setDraftStatus("tax",taxCols.length?"Loaded ✓":"No saved draft","saved");
+function normalizeBankAccount(a){
+ const labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+ const rows=Array.isArray(a.rows)?a.rows:Array.isArray(a.months)?a.months.map((m,i)=>[labels[i]||String(i+1),Number(m.dr||0),Number(m.cr||0)]):[];
+ return {...a,opening:Number(a.opening||0),rows:rows.map((r,i)=>[String(r[0]||labels[i]||i+1),Number(r[1]||0),Number(r[2]||0)])};
 }
+function bankTotals(a){
+ let running=Number(a.opening||0),dr=0,cr=0;
+ const rows=normalizeBankAccount(a).rows.map(r=>{const d=Number(r[1]||0),c=Number(r[2]||0);dr+=d;cr+=c;running+=c-d;return {month:r[0],dr:d,cr:c,net:c-d,running}});
+ return {rows,dr,cr,net:cr-dr,closing:running};
+}
+async function loadModuleDraft(type){
+ const job=selectedModuleJob(type),token=++moduleLoadToken[type],target=type==="bank"?bankAccounts:taxCols;
+ target.splice(0,target.length);
+ const render=()=>{if(type==="bank"){renderBankTabs();renderBank()}else renderTax()};
+ if(!job){render();return}
+ let data=uruzCache[type].get(job.id);
+ if(!data){
+  setDraftStatus(type,"Loading…");
+  const F=window.URUZ_FIREBASE;
+  if(!F?.db){draftLoadFailures[type].add(job.id);setDraftStatus(type,"Load failed • Firebase unavailable","error");render();return}
+  try{
+   const collection=type==="bank"?"bankSummaries":"taxComputations";
+   const snap=await F.getDoc(F.doc(F.db,collection,job.id));
+   if(token!==moduleLoadToken[type])return;
+   data=snap.exists()?snap.data():(type==="bank"?{accounts:[]}:{columns:[]});
+   uruzCache[type].set(job.id,data);
+  }catch(e){
+   if(token!==moduleLoadToken[type])return;
+   console.error("Draft load failed",e);draftLoadFailures[type].add(job.id);
+   setDraftStatus(type,"Load failed • Retry Load","error");render();
+   alert("Gagal memuatkan draft daripada Firestore. Data belum disahkan kosong. Sila semak sambungan/akses dan tekan Retry Load.");return;
+  }
+ }
+ draftLoadFailures[type].delete(job.id);
+ const items=type==="bank"?(data.accounts||[]).map(normalizeBankAccount):(data.columns||[]);
+ items.forEach(item=>target.push(structuredClone(item)));
+ render();setDraftStatus(type,target.length?"Loaded ✓":"No saved draft","saved");
+}
+window.loadBankDraft=()=>loadModuleDraft("bank");
+window.loadTaxDraft=()=>loadModuleDraft("tax");
+window.retryModuleDraft=type=>{const job=selectedModuleJob(type);if(job)uruzCache[type].delete(job.id);return loadModuleDraft(type)};
 
 let bankAccounts=[];
 window.bankAccounts=bankAccounts;
 let activeBank=0;
 function renderBankTabs(){ if(!bankAccounts.length){$("#bankTabs").innerHTML="";return;} $("#bankTabs").innerHTML=bankAccounts.map((a,i)=>`<button class="tab ${i===activeBank?"active":""}" data-bi="${i}">${a.name}</button>`).join("");$$("[data-bi]").forEach(b=>b.onclick=()=>{activeBank=+b.dataset.bi;renderBankTabs();renderBank()})}
-function renderBank(){if(!bankAccounts.length){$("#bankWorkspace").innerHTML='<div class="emptyState"><b>Belum ada Bank Summary</b>Pilih operational job/company yang telah dibuka melalui Intake, kemudian create Bank Summary.</div>';return;}let a=bankAccounts[activeBank],run=a.opening,td=0,tc=0;let rows=a.rows.map((r,i)=>{let bal=r[2]-r[1];run+=bal;td+=r[1];tc+=r[2];return `<tr><td>${r[0]}</td><td><input class="input bdr" data-i="${i}" value="${r[1].toFixed(2)}"/></td><td><input class="input bcr" data-i="${i}" value="${r[2].toFixed(2)}"/></td><td>${bal.toFixed(2)}</td><td>${run.toFixed(2)}</td></tr>`}).join("");
+function renderBank(){if(!bankAccounts.length){$("#bankWorkspace").innerHTML='<div class="emptyState"><b>Belum ada Bank Summary</b>Pilih operational job/company yang telah dibuka melalui Intake, kemudian create Bank Summary.</div>';return;}let a=bankAccounts[activeBank],tot=bankTotals(a),run=tot.closing,td=tot.dr,tc=tot.cr;let rows=tot.rows.map((r,i)=>{let bal=r.net;return `<tr><td>${r.month}</td><td><input class="input bdr" data-i="${i}" value="${r.dr.toFixed(2)}"/></td><td><input class="input bcr" data-i="${i}" value="${r.cr.toFixed(2)}"/></td><td>${bal.toFixed(2)}</td><td>${r.running.toFixed(2)}</td></tr>`}).join("");
 $("#bankWorkspace").innerHTML=`<div class="card"><div class="cardHead"><div><h2>${a.name}</h2><div class="muted">${currentBankCompany}</div></div><div class="field" style="width:180px"><label>Opening Balance</label><input id="openingBal" value="${a.opening.toFixed(2)}"/></div></div><div class="scroll"><table><thead><tr><th>Bulan</th><th>Withdrawal (DR)</th><th>Deposits (CR)</th><th>Balance (CR-DR)</th><th>Running Balance</th></tr></thead><tbody>${rows}</tbody></table></div><div class="kpiGrid" style="margin-top:12px"><div class="miniKpi"><b>RM${td.toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Total DR</span></div><div class="miniKpi"><b>RM${tc.toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Total CR</span></div><div class="miniKpi"><b>RM${(tc-td).toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Net Balance</span></div><div class="miniKpi"><b>RM${run.toLocaleString(undefined,{minimumFractionDigits:2})}</b><span>Closing Balance</span></div></div></div>`;
-$("#openingBal").onchange=e=>{a.opening=+e.target.value||0;renderBank()};$$(".bdr").forEach(x=>x.onchange=e=>{a.rows[+x.dataset.i][1]=+e.target.value||0;renderBank()});$$(".bcr").forEach(x=>x.onchange=e=>{a.rows[+x.dataset.i][2]=+e.target.value||0;renderBank()});
+$("#openingBal").onchange=e=>{a.opening=+e.target.value||0;setDraftStatus("bank","Unsaved changes");renderBank()};$$(".bdr").forEach(x=>x.onchange=e=>{a.rows[+x.dataset.i][1]=+e.target.value||0;setDraftStatus("bank","Unsaved changes");renderBank()});$$(".bcr").forEach(x=>x.onchange=e=>{a.rows[+x.dataset.i][2]=+e.target.value||0;setDraftStatus("bank","Unsaved changes");renderBank()});
 }
-$("#addBank").onclick=()=>{if(!window.appState?.jobs?.length)return alert("Open operational job melalui Doc Intake & Sorting dahulu.");bankAccounts.push({name:"New Bank "+(bankAccounts.length+1),opening:0,rows:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map(m=>[m,0,0])});activeBank=bankAccounts.length-1;renderBankTabs();renderBank()};
+$("#addBank").onclick=()=>{if(!window.appState?.jobs?.length)return alert("Open operational job melalui Doc Intake & Sorting dahulu.");bankAccounts.push({name:"New Bank "+(bankAccounts.length+1),opening:0,rows:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map(m=>[m,0,0])});activeBank=bankAccounts.length-1;setDraftStatus("bank","Unsaved changes");renderBankTabs();renderBank()};
 
 let taxCols=[];
 window.taxCols=taxCols;
-function taxCalc(c){let income=c.netProfit+c.depr+c.manager;let relief=c.self+c.internet+c.child18+c.life+c.otherRelief;let charge=Math.max(0,income-relief);let tax=charge<=c.baseFirst?0:c.baseTax+(charge-c.baseFirst)*(c.nextRate/100);let final=Math.max(0,tax-c.rebate-c.zakat);return{income,relief,charge,tax,final}}
-function renderTax(){ if(!taxCols.length){$("#taxWorkspace").innerHTML='<div class="emptyState" style="min-width:100%"><b>Belum ada Kiraan Cukai</b>Pilih operational job/company yang telah dibuka melalui Intake, kemudian create tax record.</div>';return;} $("#taxWorkspace").innerHTML=taxCols.map((c,idx)=>{let x=taxCalc(c);return `<div class="yearCol"><div class="cardHead"><div><h2>YA${c.year}</h2><div class="muted">${c.taxpayer}</div></div><button class="btn danger" data-del-tax="${idx}">×</button></div><div class="taxRows">
+function taxCalc(c){
+ const n=k=>Number(c[k]||0);
+ const income=n("netProfit")+n("depr")+n("manager");
+ const relief=n("self")+n("internet")+n("child18")+n("life")+n("otherRelief");
+ const charge=Math.max(0,income-relief);
+ const tax=charge<=n("baseFirst")?0:n("baseTax")+(charge-n("baseFirst"))*n("nextRate")/100;
+ const final=Math.max(0,tax-n("rebate")-n("zakat"));
+ return {income,relief,charge,tax,final};
+}
+function blankTaxColumn(year,taxpayer="Owner"){
+ return {year,taxpayer,dr:0,cr:0,netProfit:0,depr:0,manager:0,self:0,internet:0,child18:0,life:0,otherRelief:0,baseFirst:0,baseTax:0,nextRate:0,rebate:0,zakat:0};
+}
+function renderTax(){ if(!taxCols.length){$("#taxWorkspace").innerHTML='<div class="emptyState" style="min-width:100%"><b>Belum ada Kiraan Cukai</b>Pilih operational job/company yang telah dibuka melalui Intake, kemudian create tax record.</div>';return;} $("#taxWorkspace").innerHTML=taxCols.map((c,idx)=>{let x=taxCalc(c);return `<div class="yearCol"><div class="cardHead"><div><h2>YA${c.year}</h2><div class="muted">${String(c.taxpayer||"").replace(/&/g,"&amp;").replace(/</g,"&lt;")}</div></div><button class="btn danger" data-del-tax="${idx}">×</button></div><div class="taxRows">
+<div class="taxRow"><strong>Tahun Taksiran</strong><input type="number" min="2000" max="2100" data-tax-meta="year" data-idx="${idx}" value="${c.year}"/></div>
+<div class="taxRow"><strong>Nama Pembayar Cukai / Rakan Kongsi</strong><input data-tax-meta="taxpayer" data-idx="${idx}" value="${String(c.taxpayer||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}"/></div>
 <div class="taxRow"><strong>Total DR</strong><input data-k="dr" data-idx="${idx}" value="${c.dr}"/></div>
 <div class="taxRow"><strong>Total CR</strong><input data-k="cr" data-idx="${idx}" value="${c.cr}"/></div>
 <div class="taxRow"><strong>Balance</strong><input readonly value="${(c.cr-c.dr).toFixed(2)}"/></div>
@@ -440,11 +469,43 @@ function renderTax(){ if(!taxCols.length){$("#taxWorkspace").innerHTML='<div cla
 <div class="taxRow"><span>Rebate</span><input data-k="rebate" data-idx="${idx}" value="${c.rebate}"/></div>
 <div class="taxRow"><span>Zakat</span><input data-k="zakat" data-idx="${idx}" value="${c.zakat}"/></div>
 <div class="taxFinal">CUKAI KENA BAYAR: RM${x.final.toFixed(2)}</div></div></div>`}).join("");
-$$("[data-k]").forEach(el=>el.onchange=e=>{let c=taxCols[+e.target.dataset.idx];c[e.target.dataset.k]=+e.target.value||0;renderTax()});
-$$("[data-del-tax]").forEach(b=>b.onclick=()=>{taxCols.splice(+b.dataset.delTax,1);renderTax()});
+$$("[data-k]").forEach(el=>el.onchange=e=>{let c=taxCols[+e.target.dataset.idx];c[e.target.dataset.k]=+e.target.value||0;setDraftStatus("tax","Unsaved changes");renderTax()});
+$$("[data-del-tax]").forEach(b=>b.onclick=()=>{taxCols.splice(+b.dataset.delTax,1);setDraftStatus("tax","Unsaved changes");renderTax()});
 }
-$("#addYear").onclick=()=>{if(!taxCols.length){taxCols.push({year:new Date().getFullYear(),taxpayer:"Owner",dr:0,cr:0,netProfit:0,depr:0,manager:0,self:0,internet:0,child18:0,life:0,otherRelief:0,baseFirst:0,baseTax:0,nextRate:0,rebate:0,zakat:0});}else{let y=Math.max(...taxCols.map(x=>x.year))+1;taxCols.push({...taxCols[taxCols.length-1],year:y});}window.taxCols=taxCols;renderTax()};
-$("#addTaxpayer").onclick=()=>{if(!taxCols.length)return alert("Create tax year dahulu.");let base={...taxCols[0],taxpayer:"New Taxpayer"};taxCols.push(base);window.taxCols=taxCols;renderTax()};
+document.getElementById("taxWorkspace").addEventListener("change",e=>{
+ const el=e.target;if(!el.matches("[data-tax-meta]"))return;
+ const c=taxCols[Number(el.dataset.idx)];if(!c)return;
+ const proposedYear=el.dataset.taxMeta==="year"?Number(el.value):Number(c.year);
+ const proposedName=el.dataset.taxMeta==="taxpayer"?(el.value.trim()||"Owner"):String(c.taxpayer||"Owner");
+ if(taxCols.some((other,i)=>i!==Number(el.dataset.idx)&&Number(other.year)===proposedYear&&String(other.taxpayer||"Owner").trim().toLowerCase()===proposedName.toLowerCase())){alert("Pembayar cukai untuk tahun ini sudah wujud.");renderTax();return}
+ if(el.dataset.taxMeta==="year"){
+  const year=Number(el.value);
+  if(!Number.isInteger(year)||year<2000||year>2100){alert("Tahun taksiran tidak sah.");renderTax();return}
+  c.year=year;
+ }else{c.taxpayer=el.value.trim()||"Owner"}
+ setDraftStatus("tax","Unsaved changes");renderTax();
+});
+$("#addYear").onclick=()=>{
+ const suggested=taxCols.length?Math.max(...taxCols.map(c=>Number(c.year)||2025))+1:2025;
+ const answer=prompt("Tahun taksiran (YYYY)",String(suggested));
+ if(answer===null)return;
+ const year=Number(answer);
+ if(!/^\d{4}$/.test(answer.trim())||year<2000||year>2100)return alert("Masukkan tahun taksiran yang sah.");
+ if(taxCols.some(c=>Number(c.year)===year && c.taxpayer===(taxCols[0]?.taxpayer||"Owner")))return alert("Rekod tahun ini sudah ada untuk pembayar cukai tersebut.");
+ taxCols.push(blankTaxColumn(year,taxCols[0]?.taxpayer||"Owner"));window.taxCols=taxCols;renderTax();setDraftStatus("tax","Unsaved changes");
+};
+$("#addTaxpayer").onclick=()=>{
+ if(!taxCols.length)return alert("Add Year dahulu.");
+ const name=prompt("Nama pembayar cukai / rakan kongsi");
+ if(name===null)return;
+ if(!name.trim())return alert("Nama diperlukan.");
+ const yearAnswer=prompt("Tahun taksiran pembayar cukai",String(taxCols[taxCols.length-1].year));
+ if(yearAnswer===null)return;
+ const year=Number(yearAnswer);
+ if(!/^\d{4}$/.test(yearAnswer.trim())||year<2000||year>2100)return alert("Tahun tidak sah.");
+ if(taxCols.some(c=>Number(c.year)===year&&String(c.taxpayer).toLowerCase()===name.trim().toLowerCase()))return alert("Pembayar cukai untuk tahun ini sudah wujud.");
+ taxCols.push(blankTaxColumn(year,name.trim()));window.taxCols=taxCols;renderTax();setDraftStatus("tax","Unsaved changes");
+};
 
 const services=[
 {name:"Account & Tax",code:"ACC",desc:"Preparing Income Tax and Account Report Year End"},
@@ -619,7 +680,9 @@ async function saveBankDraft(showMessage=true){
  if(job.stage!=="bank" && showMessage){
    if(!confirm(`Job ini sekarang di ${stageLabel(job.stage)}, bukan Bank Summary. Simpan draft tanpa gerakkan job?`))return false;
  }
+ if(!assertDraftReady("bank",job))return false;
  const c=appState.companies.find(x=>x.id===job.companyId),F=window.URUZ_FIREBASE;
+ if(!navigator.onLine)return alert("Tiada internet. Save Draft memerlukan sambungan untuk Firestore.");
  if(!F?.db)return alert("Firebase belum connected.");
  const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",accounts:bankAccounts,clientUpdatedAt:new Date().toISOString(),updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
  await F.setDoc(F.doc(F.db,"bankSummaries",job.id),rec,{merge:true});uruzCache.bank.set(job.id,{...rec,accounts:structuredClone(bankAccounts)});
@@ -633,7 +696,10 @@ async function saveTaxDraft(showMessage=true){
  if(job.stage!=="tax" && showMessage){
    if(!confirm(`Job ini sekarang di ${stageLabel(job.stage)}, bukan Kiraan Cukai. Simpan draft tanpa gerakkan job?`))return false;
  }
+ if(!assertDraftReady("tax",job))return false;
+ if(taxCols.some((c,i)=>taxCols.some((d,j)=>j<i&&Number(d.year)===Number(c.year)&&String(d.taxpayer||"Owner").trim().toLowerCase()===String(c.taxpayer||"Owner").trim().toLowerCase()))){alert("Duplicate taxpayer-year ditemui. Betulkan sebelum Save Draft.");return false}
  const c=appState.companies.find(x=>x.id===job.companyId),F=window.URUZ_FIREBASE;
+ if(!navigator.onLine)return alert("Tiada internet. Save Draft memerlukan sambungan untuk Firestore.");
  if(!F?.db)return alert("Firebase belum connected.");
  const rec={jobId:job.id,companyId:job.companyId,companyName:c?.name||"",period:job.period||"",status:"draft",columns:taxCols,clientUpdatedAt:new Date().toISOString(),updatedAt:F.serverTimestamp(),updatedBy:F.auth?.currentUser?.uid||null};
  await F.setDoc(F.doc(F.db,"taxComputations",job.id),rec,{merge:true});uruzCache.tax.set(job.id,{...rec,columns:structuredClone(taxCols)});
@@ -661,8 +727,15 @@ window.saveBankDraft=saveBankDraft;
 window.saveTaxDraft=saveTaxDraft;
 
 
-$("#saveBankDraft").onclick=()=>saveBankDraft(true);
-$("#saveTaxDraft").onclick=()=>saveTaxDraft(true);
+
+async function runActionButton(id,workingText,fn){
+ const b=$("#"+id); if(!b||b.disabled)return;
+ const original=b.textContent;b.disabled=true;b.textContent=workingText;
+ try{await fn()}catch(e){console.error(e);alert("Action gagal: "+(e?.message||"Unknown error"))}
+ finally{b.disabled=false;b.textContent=original}
+}
+$("#saveBankDraft").onclick=()=>runActionButton("saveBankDraft","Saving…",()=>saveBankDraft(true));
+$("#saveTaxDraft").onclick=()=>runActionButton("saveTaxDraft","Saving…",()=>saveTaxDraft(true));
 $("#completeBank").onclick=()=>completeModule("bank");
 $("#completeTax").onclick=()=>completeModule("tax");
 
@@ -672,8 +745,9 @@ function printReport(html){
  const host=$("#printReport");host.innerHTML=`<div class="printSheet">${html}<div class="printFooter">Generated from Uruz Flow • ${new Date().toLocaleString("en-MY")}</div></div>`;
  document.body.classList.add("printingReport");
  const cleanup=()=>{document.body.classList.remove("printingReport");host.innerHTML="";window.removeEventListener("afterprint",cleanup)};
- window.addEventListener("afterprint",cleanup);
- setTimeout(()=>window.print(),80);
+ window.addEventListener("afterprint",cleanup,{once:true});
+ setTimeout(()=>{try{window.print()}catch(e){cleanup();throw e}},80);
+ setTimeout(()=>{if(document.body.classList.contains("printingReport"))cleanup()},15000);
 }
 function reportHeader(title,job,company){
  return `<div class="printBrand"><div><img src="uruz-logo.png" alt="Uruz"><div class="printTitle">${esc(title)}</div></div><div class="printMeta"><b>${esc(company?.name||"")}</b><br>Job: ${esc(job?.id||"-")}<br>Period: ${esc(job?.period||"-")}<br>PIC: ${esc(company?.pic||"-")}</div></div>`;
@@ -684,8 +758,8 @@ $("#exportBankPdf").onclick=()=>{
  if(!bankAccounts.length)return alert("Belum ada Bank Summary untuk diexport.");
  let body=reportHeader("Bank Summary",job,company);
  bankAccounts.forEach(a=>{
-   let run=Number(a.opening||0),td=0,tc=0;
-   const rows=(a.months||[]).map((m,i)=>{const dr=Number(m.dr||0),cr=Number(m.cr||0),bal=cr-dr;run+=bal;td+=dr;tc+=cr;return `<tr><td>${months[i]}</td><td>${money(dr)}</td><td>${money(cr)}</td><td>${money(bal)}</td><td>${money(run)}</td></tr>`}).join("");
+   const totals=bankTotals(a),run=totals.closing,td=totals.dr,tc=totals.cr;
+   const rows=totals.rows.map(m=>`<tr><td>${esc(m.month)}</td><td>${money(m.dr)}</td><td>${money(m.cr)}</td><td>${money(m.net)}</td><td>${money(m.running)}</td></tr>`).join("");
    body+=`<div class="printSection"><h3>${esc(a.name||"Bank Account")} ${a.account?`• ${esc(a.account)}`:""} • Opening ${money(a.opening||0)}</h3><table class="printTable"><thead><tr><th>Month</th><th>DR</th><th>CR</th><th>Balance</th><th>Running</th></tr></thead><tbody>${rows}<tr><th>Total</th><th>${money(td)}</th><th>${money(tc)}</th><th>${money(tc-td)}</th><th>${money(run)}</th></tr></tbody></table></div>`;
  });
  printReport(body);
@@ -696,20 +770,22 @@ $("#exportTaxPdf").onclick=()=>{
  if(!taxCols.length)return alert("Belum ada Kiraan Cukai untuk diexport.");
  let body=reportHeader("Kiraan Cukai",job,company);
  taxCols.forEach(t=>{
-   const add=Number(t.depr||0)+Number(t.manager||0)+Number(t.self||0)+Number(t.internet||0);
-   const income=Number(t.netProfit||0)+add;
-   const relief=Number(t.child18||0)+Number(t.life||0)+Number(t.otherRelief||0);
-   const taxable=Math.max(0,income-relief);
-   const tax=Math.max(0,Number(t.baseTax||0)+Math.max(0,taxable-Number(t.baseFirst||0))*Number(t.nextRate||0)/100-Number(t.rebate||0)-Number(t.zakat||0));
+   const x=taxCalc(t);
    const rows=[
-    ["Untung Bersih Seperti Akaun",t.netProfit],["Add-back: Depreciation",t.depr],["Add-back: Manager",t.manager],["Add-back: Self",t.self],["Add-back: Internet",t.internet],
-    ["Jumlah Pendapatan",income],["Jumlah Pelepasan",relief],["Pendapatan Kena Cukai",taxable],["Rebate",t.rebate],["Zakat",t.zakat],["Cukai Kena Bayar",tax]
+    ["Untung Bersih Seperti Akaun",t.netProfit],["Tambah: Susutnilai & Belanja Lain",t.depr],["Tambah: Gaji Pengurus",t.manager],
+    ["Jumlah Pendapatan",x.income],["Pelepasan: Diri Sendiri",t.self],["Pelepasan: Gaya Hidup / Internet",t.internet],
+    ["Pelepasan: Anak >18",t.child18],["Pelepasan: Insurans Hayat",t.life],["Pelepasan Lain",t.otherRelief],
+    ["Jumlah Pelepasan",x.relief],["Pendapatan Kena Cukai",x.charge],["Cukai Sebelum Rebat",x.tax],["Rebate",t.rebate],["Zakat",t.zakat],["Cukai Kena Bayar",x.final]
    ].map(x=>`<tr><td>${esc(x[0])}</td><td>${money(Number(x[1]||0))}</td></tr>`).join("");
    body+=`<div class="printSection"><h3>${esc(t.taxpayer||"Taxpayer")} • YA ${esc(t.year||job.period||"-")}</h3><table class="printTable"><thead><tr><th>Item</th><th>RM</th></tr></thead><tbody>${rows}</tbody></table></div>`;
  });
  printReport(body);
 };
-$("#exportBillingPdf").onclick=()=>{document.body.classList.remove("printingReport");window.print()};
+$("#exportBillingPdf").onclick=()=>{
+ const paper=document.querySelector("#billing .invoicePaper");
+ if(!paper)return alert("Sediakan Quotation / Invoice dahulu sebelum Export PDF.");
+ document.body.classList.remove("printingReport");window.print();
+};
 
 
 function debounce(fn,wait=120){let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),wait)}}

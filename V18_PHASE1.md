@@ -1,0 +1,1 @@
+Phase 1: Editable tax assessment year and taxpayer name, plus prompted year/taxpayer creation. Existing Firestore tax draft stores these fields. Tax brackets/relief limits NOT yet validated. HOD review required.
