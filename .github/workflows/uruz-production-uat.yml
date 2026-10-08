@@ -1,0 +1,55 @@
+name: URUZ Flow Production + UAT Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: uruz-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout production (main)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: production
+
+      - name: Checkout UAT V18.1
+        uses: actions/checkout@v4
+        with:
+          ref: uat/v18.1-hotfix
+          path: uat-source
+
+      - name: Assemble static site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site/uat
+          tar -C production --exclude=.git --exclude=.github -cf - . | tar -C site -xf -
+          tar -C uat-source --exclude=.git --exclude=.github -cf - . | tar -C site/uat -xf -
+          test -s site/index.html
+          test -s site/uat/index.html
+          echo "Production and UAT entrypoints verified"
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
